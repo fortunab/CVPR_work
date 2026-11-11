@@ -167,10 +167,6 @@ candidate budgets and fixed K/beta interactions. Undefined aggregate endpoints
 remain undefined. Bootstrap resamples recorded groups with fixed fitted heads;
 intervals do not infer a population of hospitals. Seed SD is separate.
 
-Native TikZ and LaTeX exports include the original diagnostic tables, three-encoder
-summaries, six protocol/metric pathology matrices and two foundation comparison
-plots. Keep original grids and matched4 labels distinct when updating paper/main.tex.
-
 ## 5. Validation and limits
 
 `provenance/RELEASE_VALIDATION.json` records actual local checks, not a proposed
