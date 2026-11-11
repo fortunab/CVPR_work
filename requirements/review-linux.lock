@@ -1,4 +1,4 @@
-# CPython 3.12, Linux x86_64; wheel set resolved on 7 November 2026.
+# CPython 3.12, Linux x86_64;
 # Downloaded wheel hashes and dependency closure verified on Windows.
 # Linux execution has not yet been validated; glibc >= 2.28 required by Pillow.
 --only-binary=:all:
