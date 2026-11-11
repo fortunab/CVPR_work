@@ -1,0 +1,634 @@
+<!doctype html><html lang="en" data-anonymous-source-directory="docs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Complete anonymous study reproduction guide for PowerShell, Bash, venv and conda."><title>Reproduce the study · CBMP</title><link rel="stylesheet" href="styles.css"><script src="proxy-compat.js" defer></script></head><body><a class="skip" href="#guide">Skip to guide</a><header class="site-header"><div class="header-inner"><a class="brand" href="index.html">cbmp<span class="brand-dot">.</span></a><nav aria-label="Main navigation"><a href="index.html#results">Results</a><a href="index.html#method">Method</a><a href="index.html#resources">Materials</a></nav><a class="header-download" href="downloads/REPRODUCE_ALL.md" download>Markdown ↓</a></div></header><div class="wrap guide-banner"><a href="index.html#reproduce">← Back to the project</a></div><main class="wrap guide-layout"><nav class="guide-nav" aria-label="Guide contents"><span class="tiny-label">IN THIS GUIDE</span><a href="#how-to-use-this-guide">How to use this guide</a><a href="#0-obtain-a-fixed-source-snapshot-and-choose-outputs">0. Obtain a fixed source snapshot and choose outputs</a><a href="#1-create-three-environments-choose-one-option">1. Create three environments: choose one option</a><a href="#2-install-dependencies-check-environments-and-run-tests">2. Install dependencies, check environments and run tests</a><a href="#3-obtain-and-stage-the-real-image-cohorts">3. Obtain and stage the real-image cohorts</a><a href="#4-fetch-resnet18dinov2-weights-and-extract-three-feature-sets">4. Fetch ResNet18/DINOv2 weights and extract three feature sets</a><a href="#5-fetch-original-uniconch-weights-and-extract-two-feature-sets">5. Fetch original UNI/CONCH weights and extract two feature sets</a><a href="#6-plan-then-actually-train-all-heads-and-evaluate-targets">6. Plan, then actually train all heads and evaluate targets</a><a href="#7-recompute-reports-uncertainty-and-prototype-audits">7. Recompute reports, uncertainty and prototype audits</a><a href="#8-export-main-study-and-supplementary-tablesfigures">8. Export main-study and supplementary tables/figures</a><a href="#9-check-completion-and-compare-with-recorded-paper-values">9. Check completion and compare with recorded paper values</a><a href="#restarting-and-troubleshooting">Restarting and troubleshooting</a><a href="#optional-appendix-separately-supplied-exact-paper-features">Optional appendix: separately supplied exact paper features</a><a href="#scope-and-validation-status">Scope and validation status</a></nav><article class="guide-content" id="guide"><div class="guide-warning"><strong>Start with real images.</strong> Choose one setup route in step 1, then follow your shell's commands. The code fits frozen-feature heads; it does not retrain the pretrained encoders.</div><h1 id="reproduce-the-complete-study-step-by-step">Reproduce the complete study, step by step</h1>
+<p>This guide covers the current five-task, ten-seed study from real images through
+classifier fitting, evaluation, uncertainty analysis and table exports. It
+includes <strong>Windows PowerShell and Linux Bash</strong>, each with <strong>venv or conda</strong>.
+No files from an old author workspace are required by the main route.</p>
+<h2 id="how-to-use-this-guide">How to use this guide</h2>
+<ol>
+<li>Complete step 0 for your operating system.</li>
+<li>Choose exactly one setup in step 1: <strong>1A, 1B, 1C or 1D</strong>.</li>
+<li>Follow steps 2-9 using only your shell's block at each step.</li>
+<li>Stay in the same terminal so interpreter functions remain defined. After
+   reopening it, restore step 0 and the functions/paths for the existing
+   environments; do not repeat environment creation.</li>
+</ol>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Environment manager</th>
+<th>Setup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows PowerShell</td>
+<td>venv</td>
+<td><a href="#1a-windows-powershell-with-venv">1A</a></td>
+</tr>
+<tr>
+<td>Windows PowerShell</td>
+<td>conda</td>
+<td><a href="#1b-windows-powershell-with-conda">1B</a></td>
+</tr>
+<tr>
+<td>Linux Bash</td>
+<td>venv</td>
+<td><a href="#1c-linux-bash-with-venv">1C</a></td>
+</tr>
+<tr>
+<td>Linux Bash</td>
+<td>conda</td>
+<td><a href="#1d-linux-bash-with-conda">1D</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>The paper trains linear/cosine classifier heads and fits prototype banks on
+<strong>frozen</strong> representations. It does not pretrain or fine-tune ResNet18, DINOv2,
+UNI or CONCH. Published weights are prepared as inputs; training the paper's
+heads happens in step 6.</p>
+<p>Three environments stay separate: <strong>head</strong> (Python 3.12), <strong>vision</strong> (Python 3.12,
+ResNet18/DINOv2) and <strong>pathology</strong> (Python 3.10, original UNI/CONCH). Step 1 defines
+three small functions that forward arguments to the right Python environment.
+Subsequent commands are the same for venv and conda within each shell; there is
+no need to switch activation or guess which <code>python</code> is on PATH.</p>
+<h2 id="0-obtain-a-fixed-source-snapshot-and-choose-outputs">0. Obtain a fixed source snapshot and choose outputs</h2>
+<p>Download/extract the full code release or clone the repository. Integrate the
+accompanying supplementary-export correction if it is not included. Run from the
+root containing <code>src</code>, <code>scripts</code>, <code>configs</code>, <code>manifests</code> and <code>tests</code>. Record
+<code>git rev-parse HEAD</code> when available, and record local updates separately.</p>
+<p>Prerequisites: 64-bit Windows or x86_64 Linux, Git, network access, dataset/model
+access and disk/RAM for images, checkpoints, features and generated runs. Full
+fresh-run time and peak storage have not been measured in this audit. macOS/ARM
+is not a validated target for the supplied platform wheel locks.</p>
+<p>For venv, install Python 3.12 and Python 3.10 with their matching venv support.
+A venv inherits the installed interpreter's patch version: the reference head
+interpreter is 3.12.3 and original foundation extraction used 3.10.22. Record any
+different patch version. The conda setup requests these versions explicitly.
+For conda, use a terminal where <code>conda --version</code> works. Creation uses Python/pip
+from conda-forge, followed by the repository's pip requirements; do not install a
+second conda NumPy/PyTorch stack afterward.</p>
+<p>Use fresh output directories. <code>artifacts/</code> is only a name for outputs derived
+from real data: features, fitted models, predictions and reports. Test fixtures
+are not scientific inputs. The main route uses no old author feature caches.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">$ErrorActionPreference = 'Stop'
+Set-Location -LiteralPath 'C:\path\to\paper-code'
+if (-not (Test-Path -LiteralPath 'scripts/run_experiments.py')) { throw 'Open the full repository root' }
+$env:CBMP_FEATURE_DIR = Join-Path $PWD 'artifacts/features/full-reproduction'
+$PathologyRequirements = 'requirements/pathology-cpu.txt'
+$PathologyDevice = 'cpu'
+New-Item -ItemType Directory -Force -Path artifacts/environment-records/full-reproduction | Out-Null
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">set -euo pipefail
+cd '/path/to/paper-code'
+test -f scripts/run_experiments.py
+export CBMP_FEATURE_DIR=&quot;$PWD/artifacts/features/full-reproduction&quot;
+CBMP_PATHOLOGY_REQUIREMENTS='requirements/pathology-cpu.txt'
+CBMP_PATHOLOGY_DEVICE='cpu'
+mkdir -p artifacts/environment-records/full-reproduction
+</code></pre>
+<p>Replace the example repository path above. Keep <code>CBMP_FEATURE_DIR</code> unchanged for
+extraction, fitting and prototype auditing. If repeating a full reconstruction,
+choose fresh feature/run/report/export directories consistently. The extractor
+will not replace an existing feature cache.</p>
+<p>Native Linux paths differ from Windows paths. In WSL, a path such as
+<code>D:\datasets\...</code> is normally <code>/mnt/d/datasets/...</code>; native Linux uses its
+own mounts. Do not reuse a Windows venv in Linux/WSL.</p>
+<h3 id="optional-gpu-choice-for-pathology">Optional GPU choice for pathology</h3>
+<p>The default above is CPU. To select the original NVIDIA pathology stack, run
+the appropriate override below <strong>before step 2</strong>. Choose one stack per new
+environment; do not install the CPU and GPU requirements on top of each other.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">$PathologyRequirements = 'requirements/pathology-gpu.txt'
+$PathologyDevice = 'cuda'
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">CBMP_PATHOLOGY_REQUIREMENTS='requirements/pathology-gpu.txt'
+CBMP_PATHOLOGY_DEVICE='cuda'
+</code></pre>
+<p>The original foundation run used Python 3.10.22, torch 2.0.1+cu117,
+torchvision 0.15.2+cu117 and a GTX 1660 Ti. The documented CPU requirements use
+a different torch pair. CUDA requires compatible existing hardware/driver
+support; these commands do not alter drivers. Record runtime/hardware changes
+and do not assume bitwise-identical features across them.</p>
+<h2 id="1-create-three-environments-choose-one-option">1. Create three environments: choose one option</h2>
+<p>Use new environment directories. If they already exist, restore their path and
+function definitions without recreating them, or choose new names. No command
+below clears an environment or installs into conda base.</p>
+<h3 id="1a-windows-powershell-with-venv">1A. Windows PowerShell with venv</h3>
+<p>The <code>py</code> selectors use installed interpreters; confirm their versions.</p>
+<pre><code class="language-powershell">py -3.12 --version
+if ($LASTEXITCODE -ne 0) { throw 'Python 3.12 is required' }
+py -3.10 --version
+if ($LASTEXITCODE -ne 0) { throw 'Python 3.10 is required' }
+py -3.12 -m venv .venv-review
+if ($LASTEXITCODE -ne 0) { throw 'Head venv creation failed' }
+py -3.12 -m venv .venv-vision
+if ($LASTEXITCODE -ne 0) { throw 'Vision venv creation failed' }
+py -3.10 -m venv .venv-pathology
+if ($LASTEXITCODE -ne 0) { throw 'Pathology venv creation failed' }
+$HeadPython = (Resolve-Path '.venv-review/Scripts/python.exe').Path
+$VisionPython = (Resolve-Path '.venv-vision/Scripts/python.exe').Path
+$PathologyPython = (Resolve-Path '.venv-pathology/Scripts/python.exe').Path
+function Invoke-HeadPython {
+    &amp; $HeadPython @args
+    if ($LASTEXITCODE -ne 0) { throw 'Head Python command failed; see the error above' }
+}
+function Invoke-VisionPython {
+    &amp; $VisionPython @args
+    if ($LASTEXITCODE -ne 0) { throw 'Vision Python command failed; see the error above' }
+}
+function Invoke-PathologyPython {
+    &amp; $PathologyPython @args
+    if ($LASTEXITCODE -ne 0) { throw 'Pathology Python command failed; see the error above' }
+}
+</code></pre>
+<p>Continue at step 2. Activation is optional because the functions use explicit
+interpreter paths; no PowerShell execution-policy change is needed.</p>
+<h3 id="1b-windows-powershell-with-conda">1B. Windows PowerShell with conda</h3>
+<p>The prefix environments live under the already-ignored <code>.conda/</code> directory.
+<code>conda run</code> supplies the environment context, including Windows DLL paths. Do
+not replace it with an unactivated conda-prefix <code>python.exe</code> invocation.</p>
+<pre><code class="language-powershell">conda --version
+if ($LASTEXITCODE -ne 0) { throw 'Open a conda-enabled PowerShell terminal' }
+$HeadPrefix = Join-Path $PWD '.conda/review'
+$VisionPrefix = Join-Path $PWD '.conda/vision'
+$PathologyPrefix = Join-Path $PWD '.conda/pathology'
+conda create --override-channels --channel conda-forge --prefix $HeadPrefix python=3.12.3 pip=24.0 -y
+if ($LASTEXITCODE -ne 0) { throw 'Head conda environment creation failed' }
+conda create --override-channels --channel conda-forge --prefix $VisionPrefix python=3.12.3 pip=24.0 -y
+if ($LASTEXITCODE -ne 0) { throw 'Vision conda environment creation failed' }
+conda create --override-channels --channel conda-forge --prefix $PathologyPrefix python=3.10.22 pip=24.0 -y
+if ($LASTEXITCODE -ne 0) { throw 'Pathology conda environment creation failed' }
+function Invoke-HeadPython {
+    conda run --no-capture-output --prefix $HeadPrefix python @args
+    if ($LASTEXITCODE -ne 0) { throw 'Head conda command failed; see the error above' }
+}
+function Invoke-VisionPython {
+    conda run --no-capture-output --prefix $VisionPrefix python @args
+    if ($LASTEXITCODE -ne 0) { throw 'Vision conda command failed; see the error above' }
+}
+function Invoke-PathologyPython {
+    conda run --no-capture-output --prefix $PathologyPrefix python @args
+    if ($LASTEXITCODE -ne 0) { throw 'Pathology conda command failed; see the error above' }
+}
+</code></pre>
+<p>Continue at step 2. No <code>conda activate</code>/<code>deactivate</code> switching is required.</p>
+<h3 id="1c-linux-bash-with-venv">1C. Linux Bash with venv</h3>
+<p>Both interpreters need their matching venv support. If unavailable, install
+them for your distribution or use 1D; do not silently substitute <code>python</code>.
+Keep <code>set -euo pipefail</code> from step 0 enabled.</p>
+<pre><code class="language-bash">python3.12 --version
+python3.10 --version
+python3.12 -m venv .venv-review
+python3.12 -m venv .venv-vision
+python3.10 -m venv .venv-pathology
+CBMP_HEAD_PYTHON=&quot;$PWD/.venv-review/bin/python&quot;
+CBMP_VISION_PYTHON=&quot;$PWD/.venv-vision/bin/python&quot;
+CBMP_PATHOLOGY_PYTHON=&quot;$PWD/.venv-pathology/bin/python&quot;
+head_python() { &quot;$CBMP_HEAD_PYTHON&quot; &quot;$@&quot;; }
+vision_python() { &quot;$CBMP_VISION_PYTHON&quot; &quot;$@&quot;; }
+pathology_python() { &quot;$CBMP_PATHOLOGY_PYTHON&quot; &quot;$@&quot;; }
+</code></pre>
+<p>Continue at step 2. Activation is optional; the functions use explicit paths.</p>
+<h3 id="1d-linux-bash-with-conda">1D. Linux Bash with conda</h3>
+<pre><code class="language-bash">conda --version
+CBMP_HEAD_PREFIX=&quot;$PWD/.conda/review&quot;
+CBMP_VISION_PREFIX=&quot;$PWD/.conda/vision&quot;
+CBMP_PATHOLOGY_PREFIX=&quot;$PWD/.conda/pathology&quot;
+conda create --override-channels --channel conda-forge --prefix &quot;$CBMP_HEAD_PREFIX&quot; python=3.12.3 pip=24.0 -y
+conda create --override-channels --channel conda-forge --prefix &quot;$CBMP_VISION_PREFIX&quot; python=3.12.3 pip=24.0 -y
+conda create --override-channels --channel conda-forge --prefix &quot;$CBMP_PATHOLOGY_PREFIX&quot; python=3.10.22 pip=24.0 -y
+head_python() { conda run --no-capture-output --prefix &quot;$CBMP_HEAD_PREFIX&quot; python &quot;$@&quot;; }
+vision_python() { conda run --no-capture-output --prefix &quot;$CBMP_VISION_PREFIX&quot; python &quot;$@&quot;; }
+pathology_python() { conda run --no-capture-output --prefix &quot;$CBMP_PATHOLOGY_PREFIX&quot; python &quot;$@&quot;; }
+</code></pre>
+<p>Continue at step 2. These environments are separate from conda base and need
+no shell activation. Keep <code>set -euo pipefail</code> enabled so failures stop execution.</p>
+<h2 id="2-install-dependencies-check-environments-and-run-tests">2. Install dependencies, check environments and run tests</h2>
+<p>Use your shell's block for either setup method. The head wheel lock differs by
+OS; never use the Windows lock on Linux. Install the vision/provider stacks in
+their separate environments, not in the head environment.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-HeadPython -m pip install --require-hashes -r requirements/review-windows.lock
+Invoke-HeadPython -m pip check
+Invoke-VisionPython -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.13.0 torchvision==0.28.0
+Invoke-VisionPython -m pip install -r requirements/vision-features.txt
+Invoke-VisionPython -m pip check
+Invoke-PathologyPython -m pip install -r $PathologyRequirements
+Invoke-PathologyPython -m pip check
+Invoke-HeadPython -m pytest tests -q --basetemp tmp/reproduction-tests
+Invoke-PathologyPython -m unittest discover -s tests -p test_pathology_checkpoint.py
+Invoke-HeadPython scripts/verify_paper_results.py
+Invoke-HeadPython -c &quot;import platform,sys; print(platform.platform()); print(sys.version)&quot; | Set-Content -Encoding utf8 artifacts/environment-records/full-reproduction/head-runtime.txt
+Invoke-VisionPython -c &quot;import platform,sys; print(platform.platform()); print(sys.version)&quot; | Set-Content -Encoding utf8 artifacts/environment-records/full-reproduction/vision-runtime.txt
+Invoke-PathologyPython -c &quot;import platform,sys; print(platform.platform()); print(sys.version)&quot; | Set-Content -Encoding utf8 artifacts/environment-records/full-reproduction/pathology-runtime.txt
+Invoke-HeadPython -m pip freeze --all | Set-Content -Encoding utf8 artifacts/environment-records/full-reproduction/head-packages.txt
+Invoke-VisionPython -m pip freeze --all | Set-Content -Encoding utf8 artifacts/environment-records/full-reproduction/vision-packages.txt
+Invoke-PathologyPython -m pip freeze --all | Set-Content -Encoding utf8 artifacts/environment-records/full-reproduction/pathology-packages.txt
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">head_python -m pip install --require-hashes -r requirements/review-linux.lock
+head_python -m pip check
+vision_python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.13.0 torchvision==0.28.0
+vision_python -m pip install -r requirements/vision-features.txt
+vision_python -m pip check
+pathology_python -m pip install -r &quot;$CBMP_PATHOLOGY_REQUIREMENTS&quot;
+pathology_python -m pip check
+head_python -m pytest tests -q --basetemp tmp/reproduction-tests
+pathology_python -m unittest discover -s tests -p test_pathology_checkpoint.py
+head_python scripts/verify_paper_results.py
+head_python -c &quot;import platform,sys; print(platform.platform()); print(sys.version)&quot; &gt; artifacts/environment-records/full-reproduction/head-runtime.txt
+vision_python -c &quot;import platform,sys; print(platform.platform()); print(sys.version)&quot; &gt; artifacts/environment-records/full-reproduction/vision-runtime.txt
+pathology_python -c &quot;import platform,sys; print(platform.platform()); print(sys.version)&quot; &gt; artifacts/environment-records/full-reproduction/pathology-runtime.txt
+head_python -m pip freeze --all &gt; artifacts/environment-records/full-reproduction/head-packages.txt
+vision_python -m pip freeze --all &gt; artifacts/environment-records/full-reproduction/vision-packages.txt
+pathology_python -m pip freeze --all &gt; artifacts/environment-records/full-reproduction/pathology-packages.txt
+</code></pre>
+<p>The minimal head environment does not install torch, so three checkpoint-loader
+tests skip there and run separately using unittest in the pathology environment.
+Those tests use explicit small test fixtures, not medical results. The summary
+checker checks tracked hashes/displays reference values; it does not fit models
+or validate newly generated predictions.</p>
+<h2 id="3-obtain-and-stage-the-real-image-cohorts">3. Obtain and stage the real-image cohorts</h2>
+<h3 id="31-polypgen">3.1 PolypGen</h3>
+<p>Obtain the permitted v3 archive from the dataset's provider:
+<a href="https://www.synapse.org/Synapse:syn45200214">PolypGen2021_MultiCenterData_v3.zip on Synapse</a>.
+The <a href="https://doi.org/10.1038/s41597-023-01981-y">dataset paper</a> documents the release.
+Replace the local archive path below. Matching the filename is not sufficient:
+staging checks each selected image's recorded content hash.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">$PolypGenZip = 'D:\datasets\PolypGen2021_MultiCenterData_v3.zip'
+Invoke-HeadPython scripts/stage_images.py --dataset polypgen --archive $PolypGenZip
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">CBMP_POLYPGEN_ZIP='/srv/datasets/PolypGen2021_MultiCenterData_v3.zip'
+head_python scripts/stage_images.py --dataset polypgen --archive &quot;$CBMP_POLYPGEN_ZIP&quot;
+</code></pre>
+<p>Expected: <code>data/raw/polypgen/STAGED.json</code> records <strong>5,444 images</strong> from 37
+sequences. Labels and group/center IDs come from the reviewed canonical manifest;
+this route does not independently repeat the original annotation review.</p>
+<h3 id="32-custom-camelyon-cohort">3.2 Custom CAMELYON cohort</h3>
+<p>Download the pinned community redistribution with the vision environment's Hub
+client. This can fetch all matching parquet shards, not just selected patches.
+Dataset terms/provider access requirements still apply. The source/revision
+are preserved for the custom cohort actually used in the paper.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-VisionPython -c &quot;from huggingface_hub import snapshot_download; snapshot_download(repo_id='wltjr1007/Camelyon17-WILDS', repo_type='dataset', revision='d784d5344ba6c967f83f9f3d9b2f1e2a4d6eb78f', allow_patterns=['*.parquet'], local_dir='data/downloads/camelyon')&quot;
+Invoke-VisionPython scripts/extract_camelyon_parquet.py --shard-dir data/downloads/camelyon
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">vision_python -c &quot;from huggingface_hub import snapshot_download; snapshot_download(repo_id='wltjr1007/Camelyon17-WILDS', repo_type='dataset', revision='d784d5344ba6c967f83f9f3d9b2f1e2a4d6eb78f', allow_patterns=['*.parquet'], local_dir='data/downloads/camelyon')&quot;
+vision_python scripts/extract_camelyon_parquet.py --shard-dir data/downloads/camelyon
+</code></pre>
+<p>Expected: <code>data/raw/camelyon/STAGED.json</code> records <strong>17,200 patches</strong> from 43
+recorded patients. This is the capped custom cohort, not full official WILDS.
+The extractor checks encoded-image and decoded-pixel hashes.</p>
+<h2 id="4-fetch-resnet18dinov2-weights-and-extract-three-feature-sets">4. Fetch ResNet18/DINOv2 weights and extract three feature sets</h2>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-VisionPython scripts/fetch_vision_checkpoints.py --destination artifacts/checkpoints/vision
+Invoke-VisionPython scripts/extract_features.py --task polypgen_resnet18 --image-root data/raw/polypgen --checkpoint-dir artifacts/checkpoints/vision --threads 4 --batch-size 64
+Invoke-VisionPython scripts/extract_features.py --task polypgen_dinov2 --image-root data/raw/polypgen --checkpoint-dir artifacts/checkpoints/vision --threads 8 --batch-size 16
+Invoke-VisionPython scripts/extract_features.py --task camelyon_resnet18 --image-root data/raw/camelyon --checkpoint-dir artifacts/checkpoints/vision --threads 4 --batch-size 64
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">vision_python scripts/fetch_vision_checkpoints.py --destination artifacts/checkpoints/vision
+vision_python scripts/extract_features.py --task polypgen_resnet18 --image-root data/raw/polypgen --checkpoint-dir artifacts/checkpoints/vision --threads 4 --batch-size 64
+vision_python scripts/extract_features.py --task polypgen_dinov2 --image-root data/raw/polypgen --checkpoint-dir artifacts/checkpoints/vision --threads 8 --batch-size 16
+vision_python scripts/extract_features.py --task camelyon_resnet18 --image-root data/raw/camelyon --checkpoint-dir artifacts/checkpoints/vision --threads 4 --batch-size 64
+</code></pre>
+<p>Expected: <code>polypgen_resnet18.npz</code>, <code>polypgen_dinov2.npz</code> and
+<code>camelyon_resnet18.npz</code>, each with a <code>.receipt.json</code>, in <code>CBMP_FEATURE_DIR</code>.
+Checkpoint/configuration identities are pinned in <code>configs/vision_assets.json</code>.</p>
+<h2 id="5-fetch-original-uniconch-weights-and-extract-two-feature-sets">5. Fetch original UNI/CONCH weights and extract two feature sets</h2>
+<p>First obtain approval from <a href="https://huggingface.co/MahmoodLab/UNI">UNI</a> and
+<a href="https://huggingface.co/MahmoodLab/CONCH">CONCH</a>, then log in interactively on your
+own machine. Approval is external to this repository. Do not put tokens in
+commands, source, logs or shared archives. <code>conda run --no-capture-output</code> leaves
+the login interactive.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-PathologyPython -c &quot;from huggingface_hub import login; login(add_to_git_credential=False)&quot;
+Invoke-PathologyPython scripts/fetch_pathology_checkpoints.py --registry configs/pathology_models.json --dest artifacts/checkpoints/pathology
+Invoke-PathologyPython scripts/extract_features.py --task camelyon_custom_uni --image-root data/raw/camelyon --checkpoint-dir artifacts/checkpoints/pathology --threads 4 --batch-size 16 --device $PathologyDevice
+Invoke-PathologyPython scripts/extract_features.py --task camelyon_custom_conch --image-root data/raw/camelyon --checkpoint-dir artifacts/checkpoints/pathology --threads 4 --batch-size 16 --device $PathologyDevice
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">pathology_python -c &quot;from huggingface_hub import login; login(add_to_git_credential=False)&quot;
+pathology_python scripts/fetch_pathology_checkpoints.py --registry configs/pathology_models.json --dest artifacts/checkpoints/pathology
+pathology_python scripts/extract_features.py --task camelyon_custom_uni --image-root data/raw/camelyon --checkpoint-dir artifacts/checkpoints/pathology --threads 4 --batch-size 16 --device &quot;$CBMP_PATHOLOGY_DEVICE&quot;
+pathology_python scripts/extract_features.py --task camelyon_custom_conch --image-root data/raw/camelyon --checkpoint-dir artifacts/checkpoints/pathology --threads 4 --batch-size 16 --device &quot;$CBMP_PATHOLOGY_DEVICE&quot;
+</code></pre>
+<p>Expected: <code>camelyon_custom_uni.npz</code> and <code>camelyon_custom_conch.npz</code>, with receipts,
+in the same feature directory. The three CAMELYON tasks share patient/patch IDs.
+The loader checks shapes, norms, identities and provenance. Fresh extraction is
+labelled <code>fresh_extraction</code>; it is not automatically claimed bitwise-identical
+to historical caches. Existing features are not overwritten.</p>
+<h2 id="6-plan-then-actually-train-all-heads-and-evaluate-targets">6. Plan, then actually train all heads and evaluate targets</h2>
+<p>The head environment performs source validation, candidate/temperature selection,
+linear/cosine training and prototype fitting/refitting on outer sources. Source
+choices are frozen before target prediction. <code>--prepare-only</code> validates inputs
+and writes <code>run_manifest.json</code> without training; the second command runs fitting.
+It does not load reference metric CSVs as a substitute for training.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">$StudyArgs = @(
+    '--run-dir', 'artifacts/runs/full-reproduction',
+    '--tasks', 'polypgen_resnet18', 'polypgen_dinov2', 'camelyon_resnet18', 'camelyon_custom_uni', 'camelyon_custom_conch',
+    '--seeds', '17', '29', '43', '61', '89', '101', '131', '173', '211', '257',
+    '--protocols', 'historical', 'matched4', 'factorial',
+    '--workers', '1', '--threads', '4'
+)
+Invoke-HeadPython scripts/run_experiments.py @StudyArgs --prepare-only
+Invoke-HeadPython scripts/run_experiments.py @StudyArgs --resume
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">CBMP_STUDY_ARGS=(
+    --run-dir artifacts/runs/full-reproduction
+    --tasks polypgen_resnet18 polypgen_dinov2 camelyon_resnet18 camelyon_custom_uni camelyon_custom_conch
+    --seeds 17 29 43 61 89 101 131 173 211 257
+    --protocols historical matched4 factorial
+    --workers 1 --threads 4
+)
+head_python scripts/run_experiments.py &quot;${CBMP_STUDY_ARGS[@]}&quot; --prepare-only
+head_python scripts/run_experiments.py &quot;${CBMP_STUDY_ARGS[@]}&quot; --resume
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tasks</th>
+<th>Targets per seed</th>
+<th>Head/settings cells per target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PolypGen ResNet18 and DINOv2</td>
+<td>C2, C4, C5, C6</td>
+<td>9 historical + 9 matched4 + 4 factorial</td>
+</tr>
+<tr>
+<td>CAMELYON ResNet18, UNI and CONCH</td>
+<td>H2 primary, H1 secondary</td>
+<td>9 historical + 9 matched4 + 4 factorial</td>
+</tr>
+</tbody>
+</table></div>
+<p>Expected: <strong>50 task/seed jobs and 3,080 target/head/seed metric cells</strong> on fixed
+cohorts. Each job saves <code>source_heads_frozen.json</code>, fitted model/source caches,
+<code>predictions.csv</code>, <code>metrics.json</code>, <code>run.log</code> and <code>COMPLETE.json</code>. The run root
+also gets <code>COMPLETE.json</code>. These cells are not independent patient populations.</p>
+<h3 id="optional-one-seed-fitting-check-before-the-full-study">Optional one-seed fitting check before the full study</h3>
+<p>The following uses a separate directory, all three protocols and one task/seed.
+It does not replace the full run or support ten-seed aggregate/paper exports.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">$SmokeArgs = @('--run-dir', 'artifacts/runs/full-smoke', '--tasks', 'polypgen_resnet18', '--seeds', '17', '--protocols', 'historical', 'matched4', 'factorial', '--workers', '1', '--threads', '4')
+Invoke-HeadPython scripts/run_experiments.py @SmokeArgs --prepare-only
+Invoke-HeadPython scripts/run_experiments.py @SmokeArgs --resume
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">CBMP_SMOKE_ARGS=(--run-dir artifacts/runs/full-smoke --tasks polypgen_resnet18 --seeds 17 --protocols historical matched4 factorial --workers 1 --threads 4)
+head_python scripts/run_experiments.py &quot;${CBMP_SMOKE_ARGS[@]}&quot; --prepare-only
+head_python scripts/run_experiments.py &quot;${CBMP_SMOKE_ARGS[@]}&quot; --resume
+</code></pre>
+<h2 id="7-recompute-reports-uncertainty-and-prototype-audits">7. Recompute reports, uncertainty and prototype audits</h2>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-HeadPython scripts/report_review_revision.py --run-dir artifacts/runs/full-reproduction --output-dir artifacts/reports/full-reproduction --attempts 2000 --seed 2027
+Invoke-HeadPython scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/full-reproduction --output-dir artifacts/reports/full-aggregate-intervals
+Invoke-HeadPython scripts/audit_review_stability.py --run-dir artifacts/runs/full-reproduction --output-dir artifacts/reports/full-prototype-stability
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">head_python scripts/report_review_revision.py --run-dir artifacts/runs/full-reproduction --output-dir artifacts/reports/full-reproduction --attempts 2000 --seed 2027
+head_python scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/full-reproduction --output-dir artifacts/reports/full-aggregate-intervals
+head_python scripts/audit_review_stability.py --run-dir artifacts/runs/full-reproduction --output-dir artifacts/reports/full-prototype-stability
+</code></pre>
+<p>The report recomputes metrics from new predictions and checks worker metrics.
+It saves per-seed/averaged metrics, selections, Same/Across and equal-group-pair
+ranking, factorial contrasts, paired BA intervals, grid sensitivity, sequence
+predictions and patient-macro patch metrics. The aggregate auditor defaults to
+2,000 attempts/seed 2027. Stability auditing needs fitted models/source features;
+retain those outputs.</p>
+<h2 id="8-export-main-study-and-supplementary-tablesfigures">8. Export main-study and supplementary tables/figures</h2>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-HeadPython scripts/export_paper_results.py --report-dir artifacts/reports/full-reproduction --output-dir artifacts/paper-exports-full
+Invoke-HeadPython scripts/export_review_supplement.py --report-dir artifacts/reports/full-reproduction --aggregate-dir artifacts/reports/full-aggregate-intervals --stability-dir artifacts/reports/full-prototype-stability --output-dir artifacts/supplement-exports-full
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">head_python scripts/export_paper_results.py --report-dir artifacts/reports/full-reproduction --output-dir artifacts/paper-exports-full
+head_python scripts/export_review_supplement.py --report-dir artifacts/reports/full-reproduction --aggregate-dir artifacts/reports/full-aggregate-intervals --stability-dir artifacts/reports/full-prototype-stability --output-dir artifacts/supplement-exports-full
+</code></pre>
+<p>The supplement command needs the accompanying exporter correction for unified
+five-task reports. Its six <code>review_*.tex</code> files retain the original three-task
+scope and explicitly use ResNet18 for the original patient-macro tables.
+UNI/CONCH summaries/figures are exported separately by the first command; full
+foundation contrasts remain in report CSVs.</p>
+<h3 id="paper-to-output-map">Paper-to-output map</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Paper result</th>
+<th>Regenerated evidence/export</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Table 1: PolypGen original-grid mean/worst BA</td>
+<td><code>paper-exports-full/original/main_polypgen.tex</code></td>
+</tr>
+<tr>
+<td>Figure 2: center-specific PolypGen comparison</td>
+<td><code>paper-exports-full/original/figure_polypgen.tex</code></td>
+</tr>
+<tr>
+<td>Table 2: three-encoder H2/H1 matched4 BA</td>
+<td>Matching cells in <code>paper-exports-full/patch_summary.csv</code>; full-head table <code>foundation_matched4_balanced_accuracy.tex</code></td>
+</tr>
+<tr>
+<td>Table 3: group-ranking diagnostics</td>
+<td><code>paper-exports-full/original/main_group_ranking.tex</code></td>
+</tr>
+<tr>
+<td>Table 4: fixed-K balancing ranking changes</td>
+<td><code>paper-exports-full/original/main_factorial_ranking.tex</code></td>
+</tr>
+<tr>
+<td>Historical/matched4/factorial foundation metrics</td>
+<td>Six <code>paper-exports-full/foundation_PROTOCOL_METRIC.tex</code> files</td>
+</tr>
+<tr>
+<td>Foundation patch/patient-macro figures</td>
+<td><code>paper-exports-full/patch_balanced_accuracy.tex</code>, <code>patient_macro_balanced_accuracy.tex</code></td>
+</tr>
+<tr>
+<td>Original full image-metric supplement</td>
+<td><code>paper-exports-full/original/full_ten_seed_tables.tex</code></td>
+</tr>
+<tr>
+<td>Original supplementary interval/endpoint/stability tables</td>
+<td>Six <code>supplement-exports-full/review_*.tex</code> files</td>
+</tr>
+<tr>
+<td>Configuration choices and source-selection reversal</td>
+<td>Report <code>selected_settings.csv</code>, per-job <code>source_heads_frozen.json</code> and fixed-factorial metrics</td>
+</tr>
+<tr>
+<td>NLL, Brier, per-seed metrics, patient/sequence results</td>
+<td>Report CSVs; scalar claims must be checked against the matching task/protocol/endpoint</td>
+</tr>
+</tbody>
+</table></div>
+<p>All export paths in this table are relative to <code>artifacts/</code>. The focused Table 2
+is a three-head presentation of matching CSV cells; its exact stored filename
+and LaTeX layout are not generated by a single command here. Exports do not
+automatically overwrite <code>paper/</code> or rewrite numbers in manuscript prose. Review
+the regenerated values before updating the corresponding LaTeX sources.</p>
+<h2 id="9-check-completion-and-compare-with-recorded-paper-values">9. Check completion and compare with recorded paper values</h2>
+<p>Check the new run's completion, then inspect the reference summaries:</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-HeadPython -c &quot;import csv,json,pathlib; run=pathlib.Path('artifacts/runs/full-reproduction'); report=pathlib.Path('artifacts/reports/full-reproduction'); done=json.loads((run/'COMPLETE.json').read_text()); rows=list(csv.DictReader((report/'image_metrics_by_seed.csv').open(encoding='utf-8'))); assert done['completed_jobs']==50, done; assert len(rows)==3080, len(rows); print('Complete:', done['completed_jobs'], 'jobs;', len(rows), 'metric cells')&quot;
+Invoke-HeadPython scripts/verify_paper_results.py
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">head_python -c &quot;import csv,json,pathlib; run=pathlib.Path('artifacts/runs/full-reproduction'); report=pathlib.Path('artifacts/reports/full-reproduction'); done=json.loads((run/'COMPLETE.json').read_text()); rows=list(csv.DictReader((report/'image_metrics_by_seed.csv').open(encoding='utf-8'))); assert done['completed_jobs']==50, done; assert len(rows)==3080, len(rows); print('Complete:', done['completed_jobs'], 'jobs;', len(rows), 'metric cells')&quot;
+head_python scripts/verify_paper_results.py
+</code></pre>
+<p><code>python scripts/verify_paper_results.py</code> checks the tracked reference summaries;
+it does not compare a new run to those summaries. Compare the new matched4 H2
+rows in <code>patch_summary.csv</code> to these recorded ten-seed BA values (%):</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Encoder</th>
+<th style="text-align: right;">CBMP</th>
+<th style="text-align: right;">Linear logistic</th>
+<th style="text-align: right;">Trained cosine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ResNet18</td>
+<td style="text-align: right;">85.54</td>
+<td style="text-align: right;">88.88</td>
+<td style="text-align: right;">86.73</td>
+</tr>
+<tr>
+<td>UNI</td>
+<td style="text-align: right;">95.80</td>
+<td style="text-align: right;">97.72</td>
+<td style="text-align: right;">97.96</td>
+</tr>
+<tr>
+<td>CONCH</td>
+<td style="text-align: right;">92.63</td>
+<td style="text-align: right;">96.50</td>
+<td style="text-align: right;">96.88</td>
+</tr>
+</tbody>
+</table></div>
+<p>Also compare PolypGen original-grid results, selected settings and paired
+contrasts with their matching reference tables/CSVs. Retain raw predictions,
+model hashes, environment inventories and run/report provenance. A matching
+rounded mean does not establish matching predictions or uncertainty intervals.
+New hardware/runtime extraction can change features; report any differences
+rather than overwriting reference summaries or weakening input checks.</p>
+<h2 id="restarting-and-troubleshooting">Restarting and troubleshooting</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New terminal</td>
+<td>Restore step 0 with the same paths/mode and only the chosen setup's path/function definitions. Do not recreate environments.</td>
+</tr>
+<tr>
+<td>Missing Python/venv</td>
+<td>Install the correct interpreters with venv support, or use conda. Do not substitute another major/minor version.</td>
+</tr>
+<tr>
+<td><code>conda</code> not found</td>
+<td>Use a conda-enabled terminal. The guide uses <code>conda run</code>, not global shell-activation changes.</td>
+</tr>
+<tr>
+<td>Missing wheel/package</td>
+<td>Preserve the error; check OS, x86_64 architecture and interpreter version. Changed pins are a different software condition.</td>
+</tr>
+<tr>
+<td>Provider 403/login failure</td>
+<td>Obtain UNI/CONCH approval and log in locally before retrying.</td>
+</tr>
+<tr>
+<td>Image hash mismatch</td>
+<td>Check the exact dataset release/bytes. Do not edit canonical manifests to suppress it.</td>
+</tr>
+<tr>
+<td>Feature file exists</td>
+<td>Preserve it; select a fresh <code>CBMP_FEATURE_DIR</code>. Interrupted extraction is not batch-resumable.</td>
+</tr>
+<tr>
+<td>Interrupted fitting</td>
+<td>Repeat step 6's execution command with identical code, inputs, tasks, seeds and resource settings.</td>
+</tr>
+<tr>
+<td>Stale <code>RUNNING</code> marker</td>
+<td>Verify that no worker remains active before handling a stale marker. Never remove a live run's lock.</td>
+</tr>
+<tr>
+<td>Report/export exists</td>
+<td>Use a new destination and update all dependent commands consistently.</td>
+</tr>
+<tr>
+<td>Only smoke completed</td>
+<td>Run the separate full ten-seed plan before aggregate audits and paper exports.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Changing tasks/seeds/resources requires a new run, not a modified resume. Use a
+new report/export directory for another analysis pass without deleting old data.</p>
+<p>For optional interactive work, venv activation is
+<code>. ./.venv-review/Scripts/Activate.ps1</code> in PowerShell or
+<code>source .venv-review/bin/activate</code> in Bash; <code>deactivate</code> leaves it. Conda-enabled
+shells can use <code>conda activate ./.conda/review</code> and <code>conda deactivate</code>. These
+activation commands are not needed by the explicit environment functions above.</p>
+<h2 id="optional-appendix-separately-supplied-exact-paper-features">Optional appendix: separately supplied exact paper features</h2>
+<p>This is not required by raw-image reproduction. It applies only if the five
+exact task NPZs have been supplied separately; they and the full prediction
+archive are not currently hosted in this source release. After steps 0-2,
+import them into the selected feature directory, skip 3-5 and continue with
+step 6 to actually refit the classifiers.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">Invoke-HeadPython scripts/import_local_artifacts.py --source 'D:\supplied-paper-features'
+</code></pre>
+<p><strong>Bash/Linux:</strong></p>
+<pre><code class="language-bash">head_python scripts/import_local_artifacts.py --source '/srv/supplied-paper-features'
+</code></pre>
+<p>Replace the example path with the supplied task-NPZ directory or an available
+original project. Import is not a download or training command; it verifies
+recorded SHA256 values. Keep the same <code>CBMP_FEATURE_DIR</code> for import/fitting/audits.</p>
+<h2 id="scope-and-validation-status">Scope and validation status</h2>
+<p>Two supplement-export fixtures failed before the fix (foundation-task KeyError;
+wrong patient-table encoder). After the fix, 65 tests passed in the available
+local Python 3.12.3 environment, and the reference-summary checker passed.
+A minimal head environment normally skips the three torch-dependent tests;
+step 2 includes their separate pathology-environment command.</p>
+<p>Shell syntax and command forwarding are checked separately from scientific
+execution; see <code>provenance/REPRODUCTION_UPDATE_VALIDATION.json</code> for actual checks. This
+documentation revision does not claim full fresh provisioning, conda solving,
+native Linux execution, provider downloads or an images-to-all-results rerun.
+Fresh numerical equivalence has not been independently established here.</p>
+<p>The current-study route excludes historical three-seed pilots, earlier source-
+composition/removal stress experiments and legacy reproduction archives cited
+by the manuscript. Distribute/document these separately if they remain claimed
+evidence. It does not add official full-WILDS evaluation, backbone fine-tuning,
+new patients or independent clinical review.</p>
+<p>For maintainers: refresh <code>provenance/RELEASE_FILES.json</code> for changed/new files and
+add a new validation record without rewriting historical attestations. The four
+frozen classifier modules/scientific source hashes remain unchanged.</p>
+<p>Environment references: <a href="https://docs.python.org/3.12/library/venv.html">Python venv</a>,
+<a href="https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html">conda environments</a>,
+<a href="https://docs.conda.io/projects/conda/en/stable/commands/run.html">conda run</a>.
+Dataset/model details: <a href="downloads/DATA.md">DATA.md</a>; runtime background:
+<a href="downloads/REPRODUCTION.md">REPRODUCTION.md</a>.</p></article></main><footer><div class="wrap footer-inner"><a class="brand" href="index.html">cbmp.</a><p>Anonymous research release · Reproduction guide</p><a href="#guide">Back to top ↑</a></div></footer></body></html>
