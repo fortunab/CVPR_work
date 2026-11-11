@@ -1,4 +1,3 @@
-"""Export numerical paper tables from completed review reports, without fitting."""
 
 from __future__ import annotations
 
