@@ -1,0 +1,32 @@
+{
+  "scope": "Reproduction documentation and supplementary-export correction",
+  "base_source_commit": "0df9b970c6db429d1e9789eaae6d870fe9c4b648",
+  "scientific_core_modified": false,
+  "regression_checks": {
+    "existing_plus_new_tests_passed": 65,
+    "new_regression_tests": 2,
+    "new_tests_failed_before_export_fix": true,
+    "python_version": "3.12.3",
+    "fresh_wheel_lock_environment_installed": false,
+    "reference_summary_hash_check_passed": true
+  },
+  "documentation_checks": {
+    "powershell_blocks_parsed": 19,
+    "main_guide_bash_blocks_lexically_checked": 15,
+    "native_bash_syntax_or_execution_verified": false,
+    "bash_runtime_note": "Host prevented Bash/WSL startup; no Linux execution claimed",
+    "powershell_venv_forwarding_helpers_checked": 3,
+    "powershell_conda_helpers_mock_dispatch_checked": 3,
+    "nonzero_exit_propagation_checked": true,
+    "full_study_argument_parity_powershell_bash": true,
+    "inline_python_snippets_compile": true,
+    "four_setup_routes_present": true
+  },
+  "not_performed": [
+    "Full raw-image-to-all-results reproduction",
+    "Conda environment provisioning and solving",
+    "Native Linux execution",
+    "Provider data or checkpoint downloads",
+    "Independent validation of fresh feature numerical equivalence"
+  ]
+}

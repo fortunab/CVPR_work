@@ -8,9 +8,31 @@ outputs are not part of the source release.
 
 The study compares center-balanced multi-prototype classification (CBMP) with
 eight linear/cosine/prototype controls. Encoders are frozen; tuning uses source
-centers only. 
+centers only.
 
-## First: check the paper numbers
+## Reproduce the complete study, including classifier fitting
+
+Follow [the ordered end-to-end guide](docs/REPRODUCE_ALL.md) to start from
+images and pretrained checkpoints, extract all five feature sets, fit/select
+all heads over ten seeds and three protocols, and regenerate reports and table
+exports. It includes complete PowerShell and Bash/Linux commands, venv and conda
+setup, expected outputs, and a paper-to-output map. Apply the accompanying supplementary-export fix if using an older release.
+
+The fitting command actually trains the linear/cosine heads and fits the
+prototype banks. The paper does not train or fine-tune the pretrained encoders.
+Downloading weights or checking saved summaries does not reproduce that fitting.
+
+| Starting point | Route | External inputs |
+|---|---|---|
+| Raw images | [Complete reproduction](docs/REPRODUCE_ALL.md) | Exact dataset images and provider checkpoints; UNI/CONCH access approval |
+| Small saved summaries | Quick check below | None; this only checks hashes and displays recorded values |
+
+The main reproduction route needs no files from the authors' old project.
+`artifacts/` is only the output directory for features extracted from real images,
+fitted models, predictions and reports. Optional reuse of exact paper features
+is documented in the guide's appendix, separately from raw-data reproduction.
+
+## Optional quick check: recorded paper numbers
 
 This command needs only the Python standard library and the tracked small summaries:
 
@@ -29,40 +51,22 @@ Primary H2 balanced accuracy, four-candidate protocol, ten-seed means (%):
 Checking these file hashes and values does not refit a classifier or reconstruct
 bootstrap intervals. The full run/reconstruction routes are documented below.
 
-## Environment: Windows / PowerShell
+## Choose your platform and environment manager
 
-Run from this clean repository root, using a new Python 3.12 environment:
+| Platform | venv | conda |
+|---|---|---|
+| Windows PowerShell | [Setup 1A](docs/REPRODUCE_ALL.md#1a-windows-powershell-with-venv) | [Setup 1B](docs/REPRODUCE_ALL.md#1b-windows-powershell-with-conda) |
+| Linux Bash | [Setup 1C](docs/REPRODUCE_ALL.md#1c-linux-bash-with-venv) | [Setup 1D](docs/REPRODUCE_ALL.md#1d-linux-bash-with-conda) |
 
-```powershell
-py -3.12 -m venv .venv-review
-$Python = (Resolve-Path '.venv-review/Scripts/python.exe').Path
-& $Python -m pip install --require-hashes -r requirements/review-windows.lock
-if ($LASTEXITCODE -ne 0) { throw 'Installation failed' }
-& $Python -m pip check
-if ($LASTEXITCODE -ne 0) { throw 'Dependency check failed' }
-& $Python -m pytest tests -q --basetemp tmp/tests-windows
-if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
-# Optional activation instead of using the interpreter path:
-# . ./.venv-review/Scripts/Activate.ps1
-```
+Start with step 0 of the guide, choose one setup, then follow your shell's block
+in steps 2-9. Each setup creates separate head, vision and pathology environments.
+The guide uses explicit interpreter functions; conda uses `conda run` so Windows
+DLL paths and the chosen environment are set without activation switching.
 
-## Environment: Linux / Bash
-
-```bash
-set -euo pipefail
-python3.12 -m venv .venv-review
-source .venv-review/bin/activate
-python -m pip install --require-hashes -r requirements/review-linux.lock
-python -m pip check
-python -m pytest tests -q --basetemp tmp/tests-linux
-```
-
-Windows runtime tests and a real paper-cache replay are recorded in
-`provenance/RELEASE_VALIDATION.json`. Linux commands and a GitHub Actions matrix
-are supplied; a Linux execution result is not claimed before it actually runs.
-Three provider-runtime checkpoint tests are skipped without torch and can be run
-in the separate pathology environment. For conda, create Python 3.12.3 plus pip,
-then install the same platform wheel lock; see [reproduction](docs/REPRODUCTION.md).
+Head-fitting dependencies use OS-specific hash-locked wheels. Vision/provider
+requirements stay separate. Actual Linux provisioning and full raw reconstruction
+have not been independently executed in this audit; documentation and shell
+syntax checks do not establish a full reproduction.
 
 ## Run the experiments
 
@@ -76,46 +80,46 @@ They use two canonical manifests, not five different cohorts. Ten fixed seeds ar
 `factorial` remain distinct protocols. `matched4` uses four candidates per tunable
 family; centroid controls have one fixed configuration.
 
-### Reuse existing feature caches on this PC
+### Prepare real-data features
 
-The migration command copies **only** the registered feature files after checking
-their original SHA256. It does not copy logs or experiment directories.
-
-```powershell
-& $Python scripts/import_local_artifacts.py --source 'C:\path\to\the-original-project'
-```
-
-On Linux/Bash:
-
-```bash
-python scripts/import_local_artifacts.py --source /path/to/original-project-or-cache-folder
-```
-
-The alternative source format is a directory containing `TASK.npz` for each task.
-Caches are stored in ignored `artifacts/features/`. Set `CBMP_FEATURE_DIR` to use
-an external artifact directory. The code works without the old project once
-those verified inputs are supplied. To rebuild features from images, follow
-[DATA.md](docs/DATA.md) and [REPRODUCTION.md](docs/REPRODUCTION.md).
+Complete steps 3-5 of [the end-to-end guide](docs/REPRODUCE_ALL.md): obtain and
+stage the exact real-image cohorts, fetch the pretrained checkpoints, and extract
+all five feature sets. The commands below then train/select the heads and
+regenerate predictions and analyses. No precomputed author run is required.
 
 ### Plan, fit, report
 
-After activating the head-fitting environment, the following commands work in
-both Bash and PowerShell. Use a new output name for each independent run:
+After steps 0-5 of the guide have prepared the selected environment functions
+and all five real-data feature sets, run your shell's block below. Defaults are
+all five tasks, all ten seeds, all three protocols, one worker and four numerical
+threads. The guide gives the explicit study arguments and a separate smoke run.
 
-```bash
-python scripts/run_experiments.py --run-dir artifacts/runs/paper --prepare-only
-python scripts/run_experiments.py --run-dir artifacts/runs/paper --resume
-python scripts/report_review_revision.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/paper --attempts 2000 --seed 2027
-python scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/paper --output-dir artifacts/reports/patient_sequence_intervals
-python scripts/audit_review_stability.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/prototype_stability
-python scripts/export_paper_results.py --report-dir artifacts/reports/paper --output-dir artifacts/paper_exports
+**PowerShell:**
+
+```powershell
+Invoke-HeadPython scripts/run_experiments.py --run-dir artifacts/runs/paper --prepare-only
+Invoke-HeadPython scripts/run_experiments.py --run-dir artifacts/runs/paper --resume
+Invoke-HeadPython scripts/report_review_revision.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/paper --attempts 2000 --seed 2027
+Invoke-HeadPython scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/paper --output-dir artifacts/reports/patient_sequence_intervals
+Invoke-HeadPython scripts/audit_review_stability.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/prototype_stability
+Invoke-HeadPython scripts/export_paper_results.py --report-dir artifacts/reports/paper --output-dir artifacts/paper_exports
+Invoke-HeadPython scripts/export_review_supplement.py --report-dir artifacts/reports/paper --aggregate-dir artifacts/reports/patient_sequence_intervals --stability-dir artifacts/reports/prototype_stability --output-dir artifacts/supplement_exports
 ```
 
-In PowerShell, check `$LASTEXITCODE` after each command; see the complete checked
-sequence in the reproduction guide. Defaults are all five tasks, all three
-protocols, ten seeds, one worker and four numerical threads. A limited smoke run
-can add `--tasks polypgen_resnet18 --seeds 17`; the ten-seed aggregate/paper exports
-require the full study. `--resume` requires unchanged code, inputs and settings.
+**Bash/Linux:**
+
+```bash
+head_python scripts/run_experiments.py --run-dir artifacts/runs/paper --prepare-only
+head_python scripts/run_experiments.py --run-dir artifacts/runs/paper --resume
+head_python scripts/report_review_revision.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/paper --attempts 2000 --seed 2027
+head_python scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/paper --output-dir artifacts/reports/patient_sequence_intervals
+head_python scripts/audit_review_stability.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/prototype_stability
+head_python scripts/export_paper_results.py --report-dir artifacts/reports/paper --output-dir artifacts/paper_exports
+head_python scripts/export_review_supplement.py --report-dir artifacts/reports/paper --aggregate-dir artifacts/reports/patient_sequence_intervals --stability-dir artifacts/reports/prototype_stability --output-dir artifacts/supplement_exports
+```
+
+Use new output names for independent runs. `--resume` requires identical code,
+inputs and settings. A one-seed run cannot support ten-seed aggregate/paper exports.
 
 Each completed job saves frozen source choices before target prediction, raw
 predictions, metrics, logs and completion hashes under its new runtime folder.
@@ -140,3 +144,4 @@ See [GitHub upload instructions](docs/GITHUB_UPLOAD.md) and [scope/provenance](N
 `paper/main.tex` is the Overleaf entry point; `paper/supplementary.tex` compiles the
 separate supplement. Results remain limited to the recorded sequences and sampled
 patients; more seeds or encoders do not add independent hospitals.
+

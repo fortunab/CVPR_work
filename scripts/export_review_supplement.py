@@ -1,4 +1,8 @@
+"""Export the original three-task supplement from a unified five-task report.
 
+UNI/CONCH comparisons are exported by export_paper_results.py. They must not
+replace ResNet18 rows in the original patient-macro tables.
+"""
 import argparse
 from pathlib import Path
 
@@ -6,6 +10,17 @@ import numpy as np
 
 from export_review_tables import HEADS
 from review_protocol import read_csv, sha256, write_json
+
+
+ORIGINAL_TASK_LABELS = {
+    "polypgen_resnet18": "ResNet18",
+    "polypgen_dinov2": "DINOv2",
+    "camelyon_resnet18": "Histology",
+}
+
+
+def original_rows(path):
+    return [row for row in read_csv(path) if row["task"] in ORIGINAL_TASK_LABELS]
 
 
 def percent(value, signed=False):
@@ -26,25 +41,26 @@ def longtable(header, columns, rows):
 
 
 def export(report, aggregates, stability, output):
-    names = {"polypgen_resnet18": "ResNet18", "polypgen_dinov2": "DINOv2", "camelyon_resnet18": "Histology"}
+    names = ORIGINAL_TASK_LABELS
     files = {}
-    rows = read_csv(report / "factorial_ranking_contrasts.csv")
+    rows = original_rows(report / "factorial_ranking_contrasts.csv")
     files["review_factorial_intervals.tex"] = longtable(
         "Encoder & Site & $K$ & Component & $\\Delta$ & 95\\% interval & Valid",
         "llrlrrr", [[names[r["task"]], r["center"], r["K"], r["metric"].replace("_auc", "").title(),
                     percent(r["beta1_minus_beta0"], True), interval(r), r["valid_draws"]] for r in rows])
-    rows = read_csv(report / "factorial_ba_interactions.csv")
+    rows = original_rows(report / "factorial_ba_interactions.csv")
     files["review_ba_interactions.tex"] = longtable(
         "Task & Site & Interaction & 95\\% interval & Valid", "llrrr",
         [[names[r["task"]], r["center"].replace("equal_center_mean", "Mean"),
           percent(r["interaction"], True), interval(r), r["valid_draws"]] for r in rows])
-    rows = read_csv(report / "protocol_sensitivity_intervals.csv")
+    rows = original_rows(report / "protocol_sensitivity_intervals.csv")
     files["review_budget_intervals.tex"] = longtable(
         "Task & Head & $\\Delta$ BA & 95\\% interval & Valid", "llrrr",
         [[names[r["task"]], HEADS[r["method"]], percent(r["matched4_minus_historical"], True),
           interval(r), r["valid_draws"]] for r in rows if r["center"] == "equal_center_mean"])
-    sequence = read_csv(report / "sequence_metrics_seed_means.csv")
-    patients = read_csv(report / "patient_macro_seed_means.csv")
+    sequence = original_rows(report / "sequence_metrics_seed_means.csv")
+    patients = [row for row in read_csv(report / "patient_macro_seed_means.csv")
+                if row["task"] == "camelyon_resnet18"]
     sections = []
     for protocol in ("historical", "matched4"):
         sections.append(f"\\subsection*{{Sequence-presence summaries: {protocol}}}")
@@ -69,7 +85,7 @@ def export(report, aggregates, stability, output):
             table.append(row)
         sections.append(longtable("Head & H2 BA & H2 AUC & H1 BA & H1 AUC", "lrrrr", table))
     files["review_group_endpoints.tex"]="\n".join(sections)
-    rows = read_csv(aggregates / "paired_aggregate_intervals.csv")
+    rows = original_rows(aggregates / "paired_aggregate_intervals.csv")
     selected=[]
     for r in rows:
         comparator="cbmp_minus_trainable_cosine" if r["task"]=="polypgen_dinov2" else "cbmp_minus_linear_logistic"
@@ -80,7 +96,7 @@ def export(report, aggregates, stability, output):
                          percent(r["difference"],True),interval(r),r["valid_draws"]])
     files["review_aggregate_intervals.tex"]=longtable(
         "Task & Grid & Site & Metric & $\\Delta$ & 95\\% interval & Valid", "llllrrr", selected)
-    rows=read_csv(stability/"prototype_stability_summary.csv")
+    rows=original_rows(stability/"prototype_stability_summary.csv")
     selected=[]
     for r in rows:
         if r["center"]!="C5" or not (r["protocol"]=="historical" and r["method"]=="cbmp"
@@ -98,6 +114,7 @@ def export(report, aggregates, stability, output):
         (output/name).write_text(content,encoding="utf-8")
     write_json(output/"provenance.json",{"report_sha256":sha256(report/"provenance.json"),
                "aggregate_sha256":sha256(aggregates/"provenance.json"),"stability_sha256":sha256(stability/"provenance.json"),
+               "task_scope": list(ORIGINAL_TASK_LABELS),
                "exporter_sha256":sha256(Path(__file__))})
     print(f"Exported {len(files)} supplementary table sources")
 
@@ -110,3 +127,4 @@ if __name__=="__main__":
     parser.add_argument("--output-dir",type=Path,required=True)
     args=parser.parse_args()
     export(args.report_dir.resolve(),args.aggregate_dir.resolve(),args.stability_dir.resolve(),args.output_dir.resolve())
+

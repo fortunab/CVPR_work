@@ -1,5 +1,10 @@
 # Reproduction from the clean repository
 
+For the ordered PowerShell and Bash/Linux walkthrough, with both venv and conda,
+start with [REPRODUCE_ALL.md](REPRODUCE_ALL.md). It covers real images, classifier
+training, all five tasks and the main/supplementary exports. This page retains
+additional runtime background; use the ordered guide for the complete sequence.
+
 Run commands from this repository root. There is no dependency on the original
 dated working folders after the registered inputs are supplied. The small tracked
 summaries check point estimates; refitting needs numerical caches, and raw-image
@@ -181,3 +186,4 @@ new patient-linked data, resolved PolypGen linkage, and clinical cluster review
 remain outside the completed experimental evidence. Earlier exploratory
 three-seed pilot/removal runs are not copied into this minimal current-study
 repository; their separate archival records remain in the original workspace.
+

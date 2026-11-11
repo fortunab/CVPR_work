@@ -21,6 +21,16 @@
       "sha256": "dcbebafbacc21f2b72cf036f322d5ac7dbe798f115a38e11cb740c0dce7e76df"
     },
     {
+      "bytes": 1090,
+      "path": "NOTICE.md",
+      "sha256": "0c57a16bdc2c39841324118676205edb207364c8c4e281956353eabec86ce765"
+    },
+    {
+      "bytes": 8126,
+      "path": "README.md",
+      "sha256": "9ff328657533520825dfbd3a3af9e26151c15456e66ab351703090178ef8aa60"
+    },
+    {
       "bytes": 1219,
       "path": "configs/pathology_models.json",
       "sha256": "7226c7fc320087fbe8b0862f55b13002640a50e19bd4c5437aac4a6424b2ab8d"
@@ -51,9 +61,14 @@
       "sha256": "602f3c1bc88b498a2ab17df6194c082c5c427c77f09b222632c08d297266e4e3"
     },
     {
-      "bytes": 10951,
+      "bytes": 34514,
+      "path": "docs/REPRODUCE_ALL.md",
+      "sha256": "fa93854b0ab0b233efbf3c586484c1223c9aeaeffcbda3c4d97c779f820628ae"
+    },
+    {
+      "bytes": 11025,
       "path": "docs/REPRODUCTION.md",
-      "sha256": "33c00b4475aeb10382c8d4a805775fd2612912c202481679a07ef94097a92ac1"
+      "sha256": "0121c6465acc284ab2ec7b14e7d1b84475ab5137e98e642b2ffa869826aa364e"
     },
     {
       "bytes": 8180883,
@@ -66,9 +81,9 @@
       "sha256": "8441cff0dca5d9d9ac5ea5967d8ed1eb305b15b92a38264a1615186a35a0e74b"
     },
     {
-      "bytes": 1090,
-      "path": "NOTICE.md",
-      "sha256": "0c57a16bdc2c39841324118676205edb207364c8c4e281956353eabec86ce765"
+      "bytes": 987,
+      "path": "paper/README.md",
+      "sha256": "8cfd5708bb34507d23f1f5516eb2aca2f202981254ad442493831cd1603ca553"
     },
     {
       "bytes": 17883,
@@ -114,11 +129,6 @@
       "bytes": 1894,
       "path": "paper/preamble.tex",
       "sha256": "080e0bae5ff30626292192ee2b4d1afca432ed2d2c939486c1bb37856166f8c1"
-    },
-    {
-      "bytes": 987,
-      "path": "paper/README.md",
-      "sha256": "8cfd5708bb34507d23f1f5516eb2aca2f202981254ad442493831cd1603ca553"
     },
     {
       "bytes": 1687,
@@ -251,19 +261,19 @@
       "sha256": "b6d8a90de08d84ddc35aa88db6241cb253f8e5c89cfdb4ca26e99a3f8e52d41a"
     },
     {
-      "bytes": 1239,
-      "path": "provenance/core_sources.json",
-      "sha256": "b12a6930aa1b2a20aa4c87e9da211b3bde196f37e917857811ce68a2f5688f35"
-    },
-    {
       "bytes": 2907,
       "path": "provenance/RELEASE_VALIDATION.json",
       "sha256": "1b99101a9e47a8ae51625fae94014cc8e7fb71efdd2de985f3317e5d77e8fab9"
     },
     {
-      "bytes": 6505,
-      "path": "README.md",
-      "sha256": "9612abdbc6b80ac17f29bab9ed155e3c063a0426ba6c670fb9bc53eab62f773a"
+      "bytes": 1296,
+      "path": "provenance/REPRODUCTION_UPDATE_VALIDATION.json",
+      "sha256": "7fac2cd90edd56cca7c9f1251160bda375ad25b94db1e6156a23e0ecf1a1a1ad"
+    },
+    {
+      "bytes": 1239,
+      "path": "provenance/core_sources.json",
+      "sha256": "b12a6930aa1b2a20aa4c87e9da211b3bde196f37e917857811ce68a2f5688f35"
     },
     {
       "bytes": 545,
@@ -306,6 +316,11 @@
       "sha256": "e6c58bd9173f27b9027da0d60a0ca42e8fa4b3b3f3f985e85ee9b2fa332811dc"
     },
     {
+      "bytes": 403,
+      "path": "results/paper/SHA256.json",
+      "sha256": "fac8a4ba9489d64335c3de16803e64b640a9983ed2b034613aaa6d1958755479"
+    },
+    {
       "bytes": 14624,
       "path": "results/paper/foundation_paired_ba.csv",
       "sha256": "d17abc194c428d7ba0f6a3e06b7987310d03a353ee1641c0d925dde36a9134bc"
@@ -324,11 +339,6 @@
       "bytes": 53462,
       "path": "results/paper/original_image_metrics.csv",
       "sha256": "d45ae8a6d4f0d5458215eddd0c6f48cfcee351d83106040fd73fdda485345d18"
-    },
-    {
-      "bytes": 403,
-      "path": "results/paper/SHA256.json",
-      "sha256": "fac8a4ba9489d64335c3de16803e64b640a9983ed2b034613aaa6d1958755479"
     },
     {
       "bytes": 8391,
@@ -356,9 +366,9 @@
       "sha256": "353b8a40402dbf1654047a473cff93a20df3ba5f683f6f93b3b687671f05fb97"
     },
     {
-      "bytes": 6367,
+      "bytes": 6834,
       "path": "scripts/export_review_supplement.py",
-      "sha256": "55b8934890059d759230b69006839a4645e50d3593e5f46d137ecd0eb406edf8"
+      "sha256": "b4dcad2c4555eed9d4c389c09b616357ea38a14eac3d88c3f3dcd20657175987"
     },
     {
       "bytes": 14884,
@@ -494,6 +504,11 @@
       "bytes": 7030,
       "path": "tests/test_review_revision.py",
       "sha256": "cd7def3bb4b5eb7c36ce52ee0825608e3f2c37add3da4ba535f37f9ba776b03c"
+    },
+    {
+      "bytes": 4337,
+      "path": "tests/test_supplement_export_scope.py",
+      "sha256": "69482503a8bad1e6a2b911bcad0f65acb99115fab3615c3779f35e400b8328cd"
     }
   ],
   "note": "Runtime artifacts are ignored; this manifest excludes itself."
