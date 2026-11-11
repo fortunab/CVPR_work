@@ -8,8 +8,7 @@ outputs are not part of the source release.
 
 The study compares center-balanced multi-prototype classification (CBMP) with
 eight linear/cosine/prototype controls. Encoders are frozen; tuning uses source
-centers only. The custom CAMELYON cohort is not complete official WILDS evaluation.
-PolypGen patient linkage remains unresolved.
+centers only. 
 
 ## First: check the paper numbers
 
