@@ -1,0 +1,20 @@
+\begin{table}[!htbp]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrr}
+\hline
+Encoder & Target & $\Delta$Same & $\Delta$Across \\
+\hline
+ResNet18 & C2 & -0.92 & -5.20 \\
+ResNet18 & C4 & +7.57 & -0.37 \\
+ResNet18 & C5 & +10.84 & -7.55 \\
+ResNet18 & C6 & +4.03 & -1.34 \\
+DINOv2 & C2 & +7.70 & -7.92 \\
+DINOv2 & C4 & +2.11 & +1.19 \\
+DINOv2 & C5 & +0.26 & -25.61 \\
+DINOv2 & C6 & +1.13 & +0.80 \\
+\hline
+\end{tabular}
+\caption{AUROC change (points) from $\beta=0$ to $\beta=1$ at fixed $K=4$, averaged over ten fitting seeds. Paired conditional intervals and valid-draw counts are supplied in the report and supplement.}
+\label{tab:factorial_ranking}
+\end{table}

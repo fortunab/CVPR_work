@@ -1,0 +1,3 @@
+# Preserve scientific source and manifest hashes across Windows/Linux.
+* -text
+*.sh text eol=lf

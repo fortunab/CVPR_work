@@ -1,0 +1,27 @@
+{
+  "access": "Both model repositories require individual Hugging Face access and terms acceptance. This configuration does not grant access.",
+  "metadata_source": "Pinned provider metadata, with checkpoint bytes verified during the completed November 10 runs.",
+  "models": {
+    "conch": {
+      "bytes": 802235437,
+      "embedding_dimension": 512,
+      "filename": "pytorch_model.bin",
+      "provider_code": "https://github.com/mahmoodlab/CONCH",
+      "provider_commit": "141cc09c7d4ff33d8eda562bd75169b457f71a62",
+      "repository": "MahmoodLab/CONCH",
+      "revision": "f9ca9f877171a28ade80228fb195ac5d79003357",
+      "sha256": "40a9644b9ba0e83a74576e0a5e5f7313599fa9c9cdaf3c20f8a3e271b0e9ae7c"
+    },
+    "uni": {
+      "bytes": 1213527781,
+      "embedding_dimension": 1024,
+      "filename": "pytorch_model.bin",
+      "provider_code": "https://github.com/mahmoodlab/UNI",
+      "provider_commit": "42715efc11722a496e0a67f3369505a8f277206c",
+      "repository": "MahmoodLab/UNI",
+      "revision": "b55a5ec6cade1a39edfe6534189a9b8ca7a022f0",
+      "sha256": "56ef09b44a25dc5c7eedc55551b3d47bcd17659a7a33837cf9abc9ec4e2ffb40"
+    }
+  },
+  "scope": "Original 2024 UNI and CONCH, not UNI2 or CONCH v1.5"
+}

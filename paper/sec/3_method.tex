@@ -1,0 +1,78 @@
+\section{Methodology}
+\label{sec:method}
+
+\subsection{Research Question and Implementation}
+We test whether center balancing and multiple class prototypes improve transfer beyond learned linear and cosine heads. To make the comparison explicit, we implement \emph{center-balanced multi-prototype classification} (CBMP) for this study. It combines group/center weighting with weighted spherical $k$-means~\cite{dhillon2001spherical}. The weighting is a design choice under evaluation; the clustering algorithm and cosine decision rule build on established methods~\cite{dhillon2001spherical,chen2019closer}.
+
+Training samples are $(x_i,y_i,s_i,g_i)$: image, class, source center, and recorded group. The target institution is excluded from fitting and selection. Figure~\ref{fig:cbmp_system} shows the source-only construction and fixed target path. Objective~\ref{obj:comparison} compares heads on shared features; Objective~\ref{obj:mechanism} varies the prototype choices; Objective~\ref{obj:replication} repeats the comparison across encoder packages and tasks. The concrete datasets, controls, and experimental families are defined together in Section~\ref{sec:experimental_design}.
+\input{fig/cbmp_system.tex}
+
+\subsection{Frozen Features and Group/Center Weights}
+Following normalized-feature cosine classification~\cite{chen2019closer}, the embedding is
+\begin{equation}
+    z_i=\frac{f_\theta(x_i)}{\|f_\theta(x_i)\|_2}.
+    \label{eq:normalized_features}
+\end{equation}
+We use each checkpoint's fixed preprocessing in evaluation mode, without stochastic augmentation. ResNet18 ImageNet1K V1 supplies 512-dimensional pooled features; DINOv2-base supplies the final layer-normalized 768-dimensional CLS embedding~\cite{he2016deep,oquab2024dinov2}. Features must be finite with nonzero norms. All heads in each encoder/task comparison share the same frozen cache. The accompanying provenance pins the model revision, preprocessing, checkpoint, manifest, and feature hashes.
+
+Histology additionally uses original UNI (2024), with 1,024-dimensional CLS features at 224 pixels, and original CONCH, with 512-dimensional unprojected visual features at 448 pixels~\cite{chen2024uni,lu2024conch}. Each frozen encoder uses its prescribed transform and the shared cache normalization. Ordered patch identities, heads, candidate grids, source folds, and fitting seeds match the ResNet18 reference. Cross-encoder differences are descriptive: architecture, pretraining, preprocessing and runtime change together. Full extraction metadata is supplied in the supplement.
+
+The ordinary class mean weights each center's class mean in proportion to its sample count~\cite{snell2017prototypical}. Equalizing centers changes that influence and increases the relative weight of estimates supported by fewer groups.
+
+For class $c$, let $\mathcal G_{s,c}$ contain the groups with class-$c$ training images at center $s$, let $G_{s,c}=|\mathcal G_{s,c}|$, and let $m_{g,c}$ count those images in group $g$. Our study implementation uses
+\begin{equation}
+\begin{aligned}
+    a_i &= G_{s_i,c}^{-\beta}/m_{g_i,c},\\
+    w_i &= a_i\Big/\sum_{j:y_j=c}a_j, \qquad \beta\in[0,1].
+\end{aligned}
+\label{eq:cbmp_weights}
+\end{equation}
+Each group has equal total weight within its center and class; a center's unnormalized class weight is $G_{s,c}^{1-\beta}$. Thus four groups outweigh one by four to one at $\beta=0$, whereas the centers have equal total influence at $\beta=1$. A longer sequence gains no weight merely through more same-class frames. Available centers can differ by class: balancing supplies no missing appearances and enforces no domain-invariance constraint. Groups are PolypGen sequences and CAMELYON patients; weighting does not establish independence.
+
+\subsection{Weighted Spherical Prototype Construction}
+We extend the spherical clustering objective~\cite{dhillon2001spherical} with the class-normalized weights in Eq.~\ref{eq:cbmp_weights}. For $\mathcal I_c=\{i:y_i=c\}$,
+\begin{equation}
+\begin{aligned}
+    J_c &= \sum_{i\in\mathcal I_c} w_i
+       \min_{1\leq k\leq K_c}(1-z_i^\top p_{c,k}),\\
+    \|p_{c,k}\|_2&=1.
+\end{aligned}
+\label{eq:cbmp_clustering}
+\end{equation}
+Assignments maximize cosine similarity, resolving ties by prototype index. For assigned set $\mathcal A_{c,k}$, the spherical mean update is
+\begin{equation}
+\begin{aligned}
+    v_{c,k}&=\sum_{i\in\mathcal A_{c,k}}w_i z_i,\\
+    p_{c,k}&=v_{c,k}/\|v_{c,k}\|_2.
+\end{aligned}
+\label{eq:cbmp_update}
+\end{equation}
+This minimizes the fixed-assignment objective when $v_{c,k}\ne0$~\cite{dhillon2001spherical}; it does not imply global optimality or robustness.
+
+Initialization samples distinct training rows with probabilities proportional to $w_i$. Five restarts per class retain the lowest training objective. Empty or near-zero updates are reseeded using the largest weighted residual; exact numerical rules accompany the implementation. Clustering stops at unchanged assignments or 100 updates. $K_c$ is bounded by $K$, class sample count, and the number of groups containing that class.
+
+\subsection{Prediction, Calibration, and Source Selection}
+The fixed finite bank uses the strongest prototype match for each class:
+\begin{equation}
+\begin{aligned}
+    h_c(x)&=\max_{1\leq k\leq K_c}z(x)^\top p_{c,k},\\
+    \hat y(x)&=\mathop{\rm argmax}_c h_c(x).
+\end{aligned}
+\label{eq:cbmp_prediction}
+\end{equation}
+This applies a cosine comparison to a spherical cluster bank~\cite{dhillon2001spherical,chen2019closer}. At $K=1,\beta=0$ it reduces to a group-weighted normalized class centroid; $\beta=1$ equalizes centers before normalization. Additional prototypes also create more opportunities for accidental matches, which the unbalanced multi-prototype control tests.
+
+Following cosine scoring and temperature scaling~\cite{chen2019closer,guo2017calibration}, probabilities are
+\begin{equation}
+    q(y=c\mid x)=\frac{\exp(h_c(x)/\tau)}{\sum_j\exp(h_j(x)/\tau)},\quad\tau>0.
+    \label{eq:prototype_classifier}
+\end{equation}
+We optimize mean source-validation negative log-likelihood (NLL) over log-temperature bounds $[-4,4]$. In the binary case, the score margin $h_1(x)-h_0(x)$ determines both the default decision and the ordering of positive-class probabilities. Temperature changes the probability scale while preserving the default decision and ordering. The threshold diagnostic instead moves the decision boundary on that same margin. At inference, the fixed encoder and head score each image independently of its center and other test images.
+
+Inner leave-one-source-center-out validation selects settings by mean balanced accuracy across valid inner centers. Training and validation must be group-disjoint and contain both classes. The supplied outer folds all support center-level validation; the implementation also records a group-disjoint fallback for unsupported cases. Temperature uses the winning configuration's held-out source predictions, after which the head is refitted on all outer sources. Target scores select no setting, checkpoint, or restart~\cite{gulrajani2021domainbed,varma2006bias}.
+
+For example, the outer C5 fold uses C1/C2/C4/C6 as sources and rotates inner validation among class-complete sources. C1 contributes negatives to fitting. The selected head is refitted on all four sources. Split checks enforce disjoint sequence IDs and exact image-content hashes.
+
+
+
+

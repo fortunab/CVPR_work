@@ -1,0 +1,79 @@
+{
+  "core_modules_verified": 4,
+  "date": "2026-11-11",
+  "five_real_feature_inputs_and_source_only_splits_validated": true,
+  "foundation_source_image_checks": {
+    "extractor_sha256": "bd525fd5d1e4b5f7f9ffa07fc3e768e9c96924eed7a6d37b3926dd56bbcb86fc",
+    "models": {
+      "conch": {
+        "checkpoint_sha256": "40a9644b9ba0e83a74576e0a5e5f7313599fa9c9cdaf3c20f8a3e271b0e9ae7c",
+        "dimension": 512,
+        "maximum_coordinate_difference": 0.0,
+        "repeat_bitwise_equal": true,
+        "source_centers": [
+          "0"
+        ],
+        "source_images": 16
+      },
+      "uni": {
+        "checkpoint_sha256": "56ef09b44a25dc5c7eedc55551b3d47bcd17659a7a33837cf9abc9ec4e2ffb40",
+        "dimension": 1024,
+        "maximum_coordinate_difference": 0.0,
+        "repeat_bitwise_equal": true,
+        "source_centers": [
+          "0"
+        ],
+        "source_images": 16
+      }
+    },
+    "scope": "real source patches only; checks portable foundation helper, not full raw reconstruction"
+  },
+  "full_five_task_refit_repeated": false,
+  "github_ci_executed": false,
+  "linux_execution_performed": false,
+  "original_research_files_or_git_history_modified": false,
+  "provider_tests_skipped_in_head_environment": 3,
+  "public_cli_help_checks": [
+    "run_experiments.py",
+    "report_review_revision.py",
+    "audit_aggregate_uncertainty.py",
+    "audit_review_stability.py",
+    "export_paper_results.py",
+    "extract_features.py",
+    "stage_images.py",
+    "extract_camelyon_parquet.py",
+    "fetch_vision_checkpoints.py",
+    "fetch_pathology_checkpoints.py"
+  ],
+  "raw_images_checkpoints_venvs_and_run_trees_included": false,
+  "real_replay": {
+    "all_csv_bytes_equal_to_original": true,
+    "evaluations": 88,
+    "metrics_equal_to_original": true,
+    "prediction_rows": 114862,
+    "predictions_sha256": "94ac3af585d45e32aa5e9f0975ae159c052bdb60f3c57f756864d079c3d4b3e4",
+    "protocols": [
+      "historical",
+      "matched4",
+      "factorial"
+    ],
+    "seed": 17,
+    "selected_configurations_and_temperatures_equal": true,
+    "task": "polypgen_resnet18"
+  },
+  "real_report_export_integration": {
+    "all_three_encoders_included": true,
+    "exporter_sha256": "353b8a40402dbf1654047a473cff93a20df3ba5f683f6f93b3b687671f05fb97",
+    "original_exporter_sha256": "1c6c3ce514a1a8895bdb9677ae656cc4011082d6959d09177ffcfdeb09facfd7",
+    "scope": "real-report export integration; not a full fresh ten-seed run",
+    "six_protocol_metric_tables": true,
+    "summary_rows": 132,
+    "two_native_tikz_figures": true
+  },
+  "recorded_summary_checker_passed": true,
+  "scientific_core_byte_identical": true,
+  "scope": "minimal portable implementation for the completed five task/encoder paper study",
+  "separate_provider_checkpoint_tests_passed": 3,
+  "standalone_source_copy_needs_no_original_directories_for_tests_or_summary_checks": true,
+  "standalone_tests_passed": 60
+}

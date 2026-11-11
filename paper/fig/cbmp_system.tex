@@ -1,0 +1,58 @@
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    font=\scriptsize, >=Latex, y=1.2cm,
+    block/.style={draw, rounded corners=2pt, align=center, text width=3.65cm,
+        minimum height=.70cm, inner sep=4pt, fill=white},
+    flow/.style={->,thick,draw=black!65},
+    panel/.style={rounded corners=4pt,inner sep=9pt},
+    title/.style={font=\footnotesize\bfseries,align=center}
+]
+\node[block,draw=blue!70!black] (src) at (1.85,-.6)
+    {\textbf{Source images}\\Class, center, and group labels};
+\node[block,draw=blue!70!black] (enc) at (1.85,-1.65)
+    {\textbf{Frozen pretrained encoder}\\Fixed preprocessing and normalization};
+\node[block,draw=blue!70!black,double] (cache) at (1.85,-2.75)
+    {\textbf{Shared feature cache}\\Same input to all nine classifier heads};
+
+\node[block,draw=orange!85!black,fill=orange!10] (val) at (6.65,-.6)
+    {\textbf{Inner source validation}\\Select $K,\beta$ and temperature};
+\node[block,draw=teal!65!black] (weights) at (6.65,-1.65)
+    {\textbf{Class/group weighting}\\$w_i\propto G_{s_i,c}^{-\beta}/m_{g_i,c}$};
+\node[block,draw=teal!65!black] (cluster) at (6.65,-2.75)
+    {\textbf{CBMP fitting}\\Weighted class-wise spherical clustering};
+\node[block,draw=teal!65!black,double] (bank) at (6.65,-3.85)
+    {\textbf{Fixed prototype bank}\\Refit on outer sources after selection};
+
+\node[block,draw=purple!70!black,dashed] (tgt) at (11.45,-.6)
+    {\textbf{Held-out target images}\\Excluded from fitting and selection};
+\node[block,draw=purple!70!black,dashed] (tenc) at (11.45,-1.65)
+    {\textbf{Same frozen encoder}\\Fixed feature extraction};
+\node[block,draw=purple!70!black,dashed] (pred) at (11.45,-2.75)
+    {\textbf{Fixed prediction}\\$h_c(x)=\max_k z(x)^\top p_{c,k}$};
+\node[block,draw=purple!70!black,dashed] (eval) at (11.45,-3.85)
+    {\textbf{Evaluate all fitted heads}\\Per-center metrics and group uncertainty};
+
+\begin{scope}[on background layer]
+\node[panel,draw=blue!45,fill=blue!4,fit=(src)(enc)(cache)] (featurepanel) {};
+\node[panel,draw=teal!45,fill=teal!4,fit=(val)(weights)(cluster)(bank)] (fitpanel) {};
+\node[panel,draw=purple!45,fill=purple!4,fit=(tgt)(tenc)(pred)(eval)] (testpanel) {};
+\end{scope}
+\node[title,above=2pt of featurepanel] {Representation};
+\node[title,above=2pt of fitpanel] {Source-only fitting};
+\node[title,above=2pt of testpanel] {Held-out evaluation};
+\draw[flow] (src)--(enc); \draw[flow] (enc)--(cache);
+\draw[flow,draw=orange!85!black] (cache.east)--(4.2,-2.75)--(4.2,-.6)--(val.west);
+\draw[flow,dashed,draw=orange!85!black] (val)--(weights);
+\draw[flow] (weights)--(cluster); \draw[flow] (cache)--(cluster);
+\draw[flow] (cluster)--(bank);
+\draw[flow] (bank.east)--(9.05,-3.85)--(9.05,-2.75)--(pred.west);
+\draw[flow] (tgt)--(tenc); \draw[flow] (tenc)--(pred); \draw[flow] (pred)--(eval);
+\node[draw=gray!50,fill=gray!5,rounded corners=2pt,text width=13.2cm,align=left,
+    inner sep=5pt] at (6.65,-5.15) {
+\textbf{PolypGen:} hold out C2, C4, C5, or C6; C1 and the remaining eligible centers are sources; group = sequence.\\[2pt]
+\textbf{CAMELYON subset:} sources H0/H3/H4 $\rightarrow$ H2 primary and H1 secondary; group = patient.};
+\end{tikzpicture}
+\caption{CBMP fitting and evaluation, grouped by function. Comparator heads share the feature cache and partitions; the lower strip specifies the two data protocols. Target evaluation provides no feedback to fitting.}
+\label{fig:cbmp_system}
+\end{figure*}

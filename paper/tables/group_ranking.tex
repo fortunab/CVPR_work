@@ -1,0 +1,18 @@
+\begin{table}[!htbp]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrr}
+\hline
+Site/encoder & Head & Pooled & Same & Across & Equal \\
+\hline
+C5 / ResNet18 & CBMP & 43.87 & 93.22 & 40.43 & 52.59 \\
+ & Linear & 65.10 & 91.56 & 63.26 & 71.47 \\
+C5 / DINOv2 & CBMP & 57.90 & 94.86 & 55.33 & 64.29 \\
+ & Cosine & 81.95 & 94.13 & 81.10 & 84.52 \\
+H2 / ResNet18 & CBMP & 92.54 & 91.85 & 92.59 & 86.00 \\
+ & Linear & 95.14 & 94.06 & 95.21 & 86.26 \\
+\hline
+\end{tabular}
+\caption{Ranking diagnostics with the original grids (percent), averaged over ten fitting seeds. Same/Across distinguish recorded group identity; Equal assigns uniform weight to observed group pairs. C5 has one positive-bearing sequence; H2 is the primary histology target.}
+\label{tab:group_ranking}
+\end{table}

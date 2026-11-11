@@ -1,0 +1,12 @@
+# CPython 3.12; install the recorded torch CPU pair separately as documented.
+numpy==1.26.4
+scipy==1.13.1
+scikit-learn==1.5.1
+joblib==1.4.2
+threadpoolctl==3.5.0
+Pillow==10.4.0
+transformers==5.14.1
+safetensors==0.8.0
+huggingface-hub==1.19.0
+tokenizers==0.22.2
+pyarrow==17.0.0

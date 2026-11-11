@@ -1,0 +1,21 @@
+\begin{table}[p]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\hline
+Head & ResNet18 H2 & UNI H2 & CONCH H2 & ResNet18 H1 & UNI H1 & CONCH H1 \\
+\hline
+CBMP & $85.09\pm1.05$ & $95.73\pm0.37$ & $92.63\pm0.00$ & $77.12\pm0.55$ & $94.44\pm1.64$ & $93.79\pm0.00$ \\
+Weighted cosine & $84.53\pm3.04$ & $97.61\pm0.07$ & $94.78\pm0.22$ & $80.50\pm2.55$ & $97.34\pm0.06$ & $93.64\pm0.06$ \\
+Weighted linear & $84.57\pm0.00$ & $96.36\pm0.00$ & $93.49\pm0.00$ & $82.67\pm0.00$ & $97.59\pm0.00$ & $94.03\pm0.00$ \\
+Linear logistic & $88.88\pm0.00$ & $97.72\pm0.00$ & $96.50\pm0.00$ & $80.30\pm0.00$ & $97.47\pm0.00$ & $92.88\pm0.00$ \\
+Unbalanced multi-prototype & $84.99\pm1.32$ & $95.69\pm0.50$ & $92.60\pm0.00$ & $76.98\pm0.43$ & $93.75\pm1.46$ & $93.49\pm0.00$ \\
+Center-balanced centroid & $75.21\pm0.00$ & $96.97\pm0.00$ & $92.63\pm0.00$ & $75.11\pm0.00$ & $96.69\pm0.00$ & $93.79\pm0.00$ \\
+Group-weighted centroid & $73.42\pm0.00$ & $96.72\pm0.00$ & $92.60\pm0.00$ & $74.55\pm0.00$ & $96.74\pm0.00$ & $93.49\pm0.00$ \\
+Image-weighted centroid & $82.52\pm0.00$ & $95.77\pm0.00$ & $95.35\pm0.00$ & $75.48\pm0.00$ & $94.55\pm0.00$ & $90.30\pm0.00$ \\
+Trained cosine & $86.73\pm2.51$ & $97.96\pm0.07$ & $96.81\pm0.15$ & $78.90\pm3.78$ & $97.46\pm0.03$ & $94.17\pm0.19$ \\
+\hline
+\end{tabular}
+\caption{Patch balanced accuracy (percent, mean and fitting-seed SD) on identical sampled patients; historical grids. H2 is primary and H1 secondary. Model-specific preprocessing is preserved. This custom subset comparison is descriptive and is not an official WILDS leaderboard result.}
+\label{tab:supp_historical_balanced_accuracy}
+\end{table}

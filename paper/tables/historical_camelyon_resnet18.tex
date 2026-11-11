@@ -1,0 +1,22 @@
+\begin{table}[!htbp]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrr}
+\hline
+ & \multicolumn{2}{c}{H2} & \multicolumn{2}{c}{H1} \\
+Classifier & BA & AUROC & BA & AUROC \\
+\hline
+CBMP & 85.09 & 92.54 & 77.12 & 85.09 \\
+Unbalanced multi-prototype & 84.99 & 92.36 & 76.98 & 85.29 \\
+Linear logistic & 88.88 & 95.14 & 80.30 & 91.71 \\
+Trained cosine & 86.73 & 94.89 & 78.90 & 91.46 \\
+Weighted linear & 84.57 & 93.14 & 82.67 & 90.03 \\
+Weighted cosine & 84.53 & 93.47 & 80.50 & 90.44 \\
+Group-weighted centroid & 73.42 & 88.92 & 74.55 & 86.47 \\
+Center-balanced centroid & 75.21 & 89.71 & 75.11 & 86.75 \\
+Image-weighted centroid & 82.52 & 91.63 & 75.48 & 88.65 \\
+\hline
+\end{tabular}
+\caption{Custom CAMELYON17-WILDS subset (percent), averaged over ten fitting seeds with the original grids. H2/H1 are fixed primary/secondary targets with 9/8 sampled patients. This is not the official full WILDS protocol.}
+\label{tab:supp_camelyon_original}
+\end{table}

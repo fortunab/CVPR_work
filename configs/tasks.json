@@ -1,0 +1,139 @@
+{
+  "all_target_data_previously_inspected": true,
+  "datasets": {
+    "camelyon": {
+      "manifest": "manifests/camelyon.csv",
+      "manifest_sha256": "eade68c5f9409c407a86f848e230bb82c1722d0e9a2da01ca8555474bc48e482",
+      "ordered_identity_sha256": "07acbc3acc6e709abf4ccd4043883de75ffe3b8ae0c795dfa90ae7c100d9a11f",
+      "original_manifest_sha256": "589664bc4a31e7a7744b3513834106812634b83be39891c100e49e8643dd4894",
+      "recorded_groups": 43,
+      "rows": 17200,
+      "scope": "custom patient-capped cohort; not complete official WILDS"
+    },
+    "polypgen": {
+      "manifest": "manifests/polypgen.csv",
+      "manifest_sha256": "8441cff0dca5d9d9ac5ea5967d8ed1eb305b15b92a38264a1615186a35a0e74b",
+      "ordered_identity_sha256": "92936d6d3fc8ce82792dfb2a9d3a4798d8c04bed830e20c6d806393a7052961d",
+      "original_manifest_sha256": "8f1753aae483e2c4bab59b72c6ae47df91d7bd32c4bbc2819aa2b6de58726ec0",
+      "recorded_groups": 37,
+      "rows": 5444,
+      "scope": "reviewed sequences; patient linkage unresolved",
+      "splits_sha256": "a3688aab062fe54f4d719b3ce9328390b31f20f674c1f12a85f8a1217b4bcca7"
+    }
+  },
+  "protocols": [
+    "historical",
+    "matched4",
+    "factorial"
+  ],
+  "seeds": [
+    17,
+    29,
+    43,
+    61,
+    89,
+    101,
+    131,
+    173,
+    211,
+    257
+  ],
+  "tasks": {
+    "camelyon_custom_conch": {
+      "checkpoint_sha256": "40a9644b9ba0e83a74576e0a5e5f7313599fa9c9cdaf3c20f8a3e271b0e9ae7c",
+      "dataset": "camelyon",
+      "dimension": 512,
+      "encoder": "conch",
+      "features": "camelyon_custom_conch.npz",
+      "model_revision": "f9ca9f877171a28ade80228fb195ac5d79003357",
+      "paper_feature_sha256": "031b127a9e2bb97a32b65e360f3806683bf21c0ba90e2818b5b636047b2f8c15",
+      "reference_metadata": {
+        "checkpoint_sha256": "40a9644b9ba0e83a74576e0a5e5f7313599fa9c9cdaf3c20f8a3e271b0e9ae7c",
+        "embedding_definition": "CONCH encode_image(proj_contrast=False, normalize=False), then cache L2 normalization",
+        "encoder": "conch",
+        "manifest_sha256": "4a0b15f97ffc8333e89b3070979d6d7884d9168e1e6f7023ad790d044012c8b5",
+        "model_revision": "f9ca9f877171a28ade80228fb195ac5d79003357",
+        "packages": {
+          "Pillow": "10.4.0",
+          "conch": "0.1.0",
+          "numpy": "1.26.4",
+          "safetensors": "0.4.5",
+          "timm": "0.9.8",
+          "torch": "2.0.1+cu117",
+          "torchvision": "0.15.2+cu117"
+        },
+        "preprocessing": "Compose(\n    Resize(size=448, interpolation=bicubic, max_size=None, antialias=warn)\n    CenterCrop(size=(448, 448))\n    <function _convert_to_rgb at <runtime-address>>\n    ToTensor()\n    Normalize(mean=(0.48145466, 0.4578275, 0.40821073), std=(0.26862954, 0.26130258, 0.27577711))\n)"
+      }
+    },
+    "camelyon_custom_uni": {
+      "checkpoint_sha256": "56ef09b44a25dc5c7eedc55551b3d47bcd17659a7a33837cf9abc9ec4e2ffb40",
+      "dataset": "camelyon",
+      "dimension": 1024,
+      "encoder": "uni",
+      "features": "camelyon_custom_uni.npz",
+      "model_revision": "b55a5ec6cade1a39edfe6534189a9b8ca7a022f0",
+      "paper_feature_sha256": "9b64a7078c5cd06394c0194b539a2fa8ffdec227fd63af0984de8429bc547577",
+      "reference_metadata": {
+        "checkpoint_sha256": "56ef09b44a25dc5c7eedc55551b3d47bcd17659a7a33837cf9abc9ec4e2ffb40",
+        "embedding_definition": "Original UNI (2024) ViT-L/16 CLS feature, before final cache L2 normalization",
+        "encoder": "uni",
+        "manifest_sha256": "4a0b15f97ffc8333e89b3070979d6d7884d9168e1e6f7023ad790d044012c8b5",
+        "model_revision": "b55a5ec6cade1a39edfe6534189a9b8ca7a022f0",
+        "packages": {
+          "Pillow": "10.4.0",
+          "conch": "0.1.0",
+          "numpy": "1.26.4",
+          "safetensors": "0.4.5",
+          "timm": "0.9.8",
+          "torch": "2.0.1+cu117",
+          "torchvision": "0.15.2+cu117"
+        },
+        "preprocessing": "Compose(\n    Resize(size=224, interpolation=bilinear, max_size=None, antialias=warn)\n    CenterCrop(size=(224, 224))\n    ToTensor()\n    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))\n)"
+      }
+    },
+    "camelyon_resnet18": {
+      "checkpoint_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+      "dataset": "camelyon",
+      "dimension": 512,
+      "encoder": "resnet18",
+      "features": "camelyon_resnet18.npz",
+      "paper_feature_sha256": "120bc9ece2cea8573db715d0b9b0ecc80f1733c2b25ef095343579f460e747cc",
+      "reference_metadata": {
+        "checkpoint_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+        "encoder": "torchvision.resnet18",
+        "manifest_sha256": "589664bc4a31e7a7744b3513834106812634b83be39891c100e49e8643dd4894",
+        "preprocessing": "ImageClassification(\n    crop_size=[224]\n    resize_size=[256]\n    mean=[0.485, 0.456, 0.406]\n    std=[0.229, 0.224, 0.225]\n    interpolation=InterpolationMode.BILINEAR\n)",
+        "representation": "global_average_pool_before_fc;512dim;L2normalized"
+      }
+    },
+    "polypgen_dinov2": {
+      "checkpoint_sha256": "d73036b56966966d07975d696bde331762f37297e2f095de8cea0040c3aa0841",
+      "dataset": "polypgen",
+      "dimension": 768,
+      "encoder": "dinov2",
+      "features": "polypgen_dinov2.npz",
+      "paper_feature_sha256": "6d0c61aec3be661bdc0974b41065b0c55d6be7fea32639c1b7bc98133ffefc8b",
+      "reference_metadata": {
+        "checkpoint_sha256": "d73036b56966966d07975d696bde331762f37297e2f095de8cea0040c3aa0841",
+        "manifest_digest": "8a0b340e84aa28bab4d96011a38fc985d896291586b95afb4d67a2843cee5e44",
+        "processor_config_sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828",
+        "representation": "Dinov2Model.pooler_output: final layer-normalized CLS,768 dimensions; verified equal to last_hidden_state[:,0]",
+        "revision": "f9e44c814b77203eaa57a6bdbbd535f21ede1415"
+      }
+    },
+    "polypgen_resnet18": {
+      "checkpoint_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+      "dataset": "polypgen",
+      "dimension": 512,
+      "encoder": "resnet18",
+      "features": "polypgen_resnet18.npz",
+      "paper_feature_sha256": "8e05993fa657b77177dba5fdb09550adc0746e3cbc8724a4d71d6a959e3da21c",
+      "reference_metadata": {
+        "checkpoint_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+        "manifest_digest": "8a0b340e84aa28bab4d96011a38fc985d896291586b95afb4d67a2843cee5e44",
+        "preprocessing": "ImageClassification(\n    crop_size=[224]\n    resize_size=[256]\n    mean=[0.485, 0.456, 0.406]\n    std=[0.229, 0.224, 0.225]\n    interpolation=InterpolationMode.BILINEAR\n)",
+        "resolved_model": "torchvision.resnet18.IMAGENET1K_V1"
+      }
+    }
+  }
+}

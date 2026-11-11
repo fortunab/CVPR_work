@@ -1,0 +1,19 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+\subsection{Medical Domain Generalization}
+Domain generalization evaluates a source-trained model on a target unavailable during fitting~\cite{gulrajani2021domainbed}. Medical acquisition and population differences can affect appearance and label frequencies~\cite{zech2018generalization,yoon2024medicaldg}. Yoon et al. organize medical DG at the data, feature, model, and analysis levels~\cite{yoon2024medicaldg}, motivating joint attention to classifier construction and evaluation support.
+
+DomainBed shows why implementation and source-only model selection matter when comparing DG algorithms with empirical risk minimization~\cite{gulrajani2021domainbed}. Nested evaluation separates tuning observations from those used to estimate performance~\cite{varma2006bias}. In domain adaptation, where unlabeled target images are available, domain invariance and low source error can coexist with poor target performance under certain shifts~\cite{zhao2019invariant}.
+
+\subsection{Foundation Encoders and Prototype Classifiers}
+DINOv2 and DINOv3 develop transferable visual representations through self-supervised learning~\cite{oquab2024dinov2,simeoni2025dinov3}. In pathology, UNI provides a general-purpose visual representation, while CONCH combines visual and language pretraining~\cite{chen2024uni,lu2024conch}. These models motivate asking whether a prototype effect observed with a general-purpose ImageNet encoder persists with pathology-specific representations. We therefore evaluate the original UNI and CONCH image encoders alongside ResNet18 on identical sampled histology patients. The comparison fits the same downstream head families using each model's prescribed image preprocessing; it does not substitute text-prompt classification or reproduce the providers' full evaluation suites. DINOv3 remains related work rather than an evaluated encoder.
+
+Prototypical Networks use class references in a learned metric space~\cite{snell2017prototypical}, and strong cosine-classifier baselines support controlled downstream comparisons~\cite{chen2019closer}. Spherical $k$-means clusters normalized feature directions~\cite{dhillon2001spherical}. These are the established components of our finite-bank implementation. Temperature scaling adjusts probabilities while preserving the binary score ordering~\cite{guo2017calibration}. Consequently, a source-selected temperature alone cannot repair poor across-group ranking.
+
+\subsection{Prototype Methods for Medical Transfer}
+Dynamic prototype-based contrastive learning uses labeled source and unlabeled target data for medical segmentation~\cite{en2024dpcl}. InfProto instead trains on a single source and combines learned spatial features with instance-conditioned prototype distributions for segmentation~\cite{guo2024infproto}. Its inference can incorporate target-instance and mini-batch statistics. These are distinct access and training settings. Comparing them with our frozen multi-source image heads requires a disclosed task adaptation and optimization budget; the present controls do not establish their relative performance.
+
+PolypGen exposes institutional variation in endoscopy~\cite{ali2023polypgen}; CAMELYON17-WILDS does so in histology patches~\cite{bandi2019camelyon,koh2021wilds}. We use them to test a finite weighted bank against discriminative heads and to examine how recorded groups support the apparent transfer.
+
+

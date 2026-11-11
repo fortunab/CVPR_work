@@ -1,0 +1,25 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Medical image recognition must cope with changes in scanners, acquisition protocols, staining, and patient populations between institutions. A classifier trained at one set of hospitals can lose accuracy on images collected at another hospital, even when the diagnostic labels are unchanged. Cross-hospital pneumonia detection illustrates both this loss and hospital-associated confounding~\cite{zech2018generalization}. Recent medical domain-generalization literature treats this as a problem spanning data, representations, models, and evaluation~\cite{yoon2024medicaldg}. The relevant question is therefore how to recognize useful class structure without relying on correlations specific to the training institutions.
+
+Pretrained encoders let us compare decision rules while holding the image representation fixed. The value of medical transfer learning depends on the task~\cite{raghu2019transfusion}. Pathology-specific foundation models further motivate separating improvements associated with the encoder from those associated with the classifier~\cite{chen2024uni,lu2024conch}. We compare heads on shared features within each encoder configuration: ResNet18 and DINOv2 for endoscopy, and ResNet18, UNI, and CONCH for histology. This tests representation dependence while retaining the distinction between tasks.
+
+Prototype classifiers represent classes with reference vectors. Class means, cosine classifiers, and multiple-prototype models offer different ways to summarize the same features~\cite{snell2017prototypical,chen2019closer,dhillon2001spherical}. Multiple references can retain distinct appearances that a single class centroid compresses. Weighting training centers equally changes which observations influence those references. Neither change alone distinguishes diagnostic variation from acquisition effects: a small center can supply a noisy class estimate, and an additional prototype can match a source-specific pattern. Medical prototype methods already address transfer through mechanisms such as dynamic cross-domain prototypes and instance-conditioned classifiers~\cite{en2024dpcl,guo2024infproto}. Their existence makes a controlled comparison with simpler classifiers necessary.
+
+\paragraph{Central question.}
+\textbf{Do additional prototypes and center balancing improve classification at a held-out institution once features and source validation are fixed?} We implement CBMP as a controlled combination of weighting and spherical clustering. We examine both the rule chosen by source validation and fixed settings that isolate its components. A pooled AUROC mixes class separation within groups with score comparisons between groups. Decomposing those pairs can reveal where the performance changes, while inspecting the selected settings establishes which prototype mechanism produced them.
+
+\paragraph{Scope and three objectives.}
+The experiments cover frame-level polyp-presence classification on a reviewed PolypGen subset and tumor-patch classification on a patient-capped CAMELYON17-WILDS subset~\cite{ali2023polypgen,bandi2019camelyon,koh2021wilds}. PolypGen inclusion requires reviewable center assignments, annotations, and sequence groups. The histology cap is label-blind. The scope is a comparison of frozen-feature heads on these cohorts. Within that scope, the study has three objectives:
+\begin{enumerate}
+    \item \textbf{Compare decision rules.}\label{obj:comparison} Evaluate our CBMP implementation against eight linear, cosine, and prototype controls using the same frozen features and target partitions.
+    \item \textbf{Diagnose the observed differences.}\label{obj:mechanism} Link the selected settings to fixed prototype-count and center-weighting comparisons, then locate ranking changes within or across recorded groups.
+    \item \textbf{Check dependence on representation and task.}\label{obj:replication} Compare ResNet18 and DINOv2 on endoscopy and ResNet18, UNI, and CONCH on the same histology cohort, keeping features fixed within each head comparison and reporting representation-dependent effects and data limitations.
+\end{enumerate}
+The contribution is an empirical analysis of classifier construction, source selection, and the groups supporting the evaluation. The ranking audit uses target labels after fitting and is exploratory. Its paired contrasts describe the observed groups with fitted heads fixed.
+
+\paragraph{Paper organization.}
+Section~\ref{sec:background} reviews related work; Section~\ref{sec:method} defines the classifiers and selection procedure; Section~\ref{sec:results} presents the experimental design and findings; and Section~\ref{sec:conclusion} discusses their implications and next validation steps.
+
+

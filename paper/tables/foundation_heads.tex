@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llrrr}
+\hline
+Target & Encoder & CBMP & Linear & Cosine \\
+\hline
+H2 & ResNet18 & 85.54 & 88.88 & 86.73 \\
+   & UNI      & 95.80 & 97.72 & 97.96 \\
+   & CONCH    & 92.63 & 96.50 & 96.88 \\
+\hline
+H1 & ResNet18 & 77.14 & 80.30 & 78.90 \\
+   & UNI      & 95.02 & 97.47 & 97.48 \\
+   & CONCH    & 93.79 & 92.88 & 93.95 \\
+\hline
+\end{tabular}
+\caption{Patch balanced accuracy (\%), averaged over ten fitting seeds on identical sampled patients under the four-candidate protocol. H2 is primary and H1 secondary. Linear denotes logistic regression; cosine denotes the trained cosine head. These three heads are a focused view; all nine heads, fitting-seed SDs, AUROC, and the historical-grid controls are reported separately. This is the custom CAMELYON17-WILDS cohort.}
+\label{tab:foundation_heads}
+\end{table}

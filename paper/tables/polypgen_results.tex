@@ -1,0 +1,21 @@
+\begin{table*}[!htbp]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrr}
+\hline
+Classifier & ResNet18 mean BA & ResNet18 worst BA & DINOv2 mean BA & DINOv2 worst BA \\
+\hline
+CBMP & $58.05\pm0.68$ & 42.17 & $59.92\pm0.48$ & 46.79 \\
+Unbalanced multi-prototype & $60.99\pm0.87$ & 53.14 & $60.18\pm0.36$ & 47.85 \\
+Linear logistic & $70.20\pm0.00$ & 57.17 & $61.31\pm0.00$ & 52.12 \\
+Trained cosine & $63.42\pm2.46$ & 57.66 & $68.35\pm0.85$ & 61.24 \\
+Weighted linear & $61.78\pm0.00$ & 47.17 & $59.24\pm0.00$ & 51.30 \\
+Weighted cosine & $63.47\pm1.89$ & 45.88 & $66.75\pm2.50$ & 62.25 \\
+Group-weighted centroid & $63.15\pm0.00$ & 60.34 & $64.03\pm0.00$ & 53.87 \\
+Center-balanced centroid & $60.48\pm0.00$ & 47.63 & $61.21\pm0.00$ & 51.53 \\
+Image-weighted centroid & $60.41\pm0.00$ & 58.17 & $62.32\pm0.00$ & 51.23 \\
+\hline
+\end{tabular}
+\caption{PolypGen BA (percent) with the original grids. Mean BA is the mean $\pm$ fitting-seed SD of ten equal-center averages over C2/C4/C5/C6; worst BA is the minimum center-specific seed mean. The reviewed cohort contains 5,444 frames and 37 recorded sequences; patient linkage is unresolved.}
+\label{tab:polypgen_results}
+\end{table*}

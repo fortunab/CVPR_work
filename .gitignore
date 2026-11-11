@@ -1,0 +1,43 @@
+# Environments and private credentials
+.venv*/
+.conda/
+.env
+.env.*
+!.env.example
+*token*
+!**/tokenizer_config.json
+*.pem
+*.key
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Runtime inputs and outputs; tracked reference summaries live in results/paper.
+/artifacts/
+/data/raw/
+/tmp/
+/validation-local/
+/checkpoints/
+*.npz
+*.npy
+*.pth
+*.pt
+*.bin
+*.safetensors
+*.parquet
+*.zip
+*.log
+
+# LaTeX build products
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.xdv
+*.out
+*.pdf
+.DS_Store
+Thumbs.db

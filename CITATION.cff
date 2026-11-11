@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: Please cite the accompanying paper when using this research implementation.
+type: software
+title: 'Do Center-Balanced Prototypes Generalize? A Controlled Study in Medical Imaging'
+authors:
+  - name: Anonymous research authors
+version: 0.1.0
+date-released: '2026-11-11'
+abstract: Frozen-feature prototype, linear and cosine comparisons under source-only cross-center evaluation.

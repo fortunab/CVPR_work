@@ -1,0 +1,122 @@
+\section{Experiments and Results}
+\label{sec:results}
+
+\subsection{Cohorts, Comparisons, and Uncertainty}
+\label{sec:experimental_design}
+
+\paragraph{PolypGen cohort and labels.}
+The reviewed subset contains 5,444 frames from 37 sequences~\cite{ali2023polypgen}. Review denotes an annotation/provenance filter, not independent patient-level adjudication. A mask is positive when any pixel exceeds 127; matching bounding-box annotations must agree on presence. Unannotated frames receive negative labels only in documented negative-only sequences. Disputed center assignments and pending annotation review are excluded before fitting. This is not complete-release coverage.
+
+Both classes occur at C2/C4/C5/C6, with 2/10/4/18 sequences, respectively. C1 has negative-only support and remains source-only; C3 is excluded after mapping review. The two encoders share the manifest, partitions, and ten fitting seeds, listed in the supplement. Architecture, pretraining, and preprocessing change together when switching encoders.
+
+\paragraph{Histology cohort.}
+The custom CAMELYON17-WILDS cohort contains 17,200 patches from 43 recorded patients, using the existing label-blind cap of 400 patches per patient and original partition~\cite{bandi2019camelyon,koh2021wilds}. Labels indicate tumor in the central $32\times32$ region of a $96\times96$ patch. H0/H3/H4 provide 26 source patients; H2 is the primary target with 9 patients and H1 the secondary target with 8. The same cohort is encoded with ResNet18, UNI, and CONCH. Both targets remain excluded from head fitting, hyperparameter selection, temperature selection, and operating-threshold selection. Standard WILDS instead uses H1 for validation and H2 for testing; our capped cohort and source-only selection define a custom representation-transfer experiment, not a full official benchmark or leaderboard result~\cite{wilds2026submission}. The foundation-encoder extension uses previously inspected hospitals and is exploratory rather than independent confirmation.
+
+
+\paragraph{Prediction unit.}
+Head selection uses frame/patch BA. An additional sequence readout labels presence within reviewed frames by any positive frame, scores a sequence by its maximum raw margin, and fixes its threshold by mean sequence BA at class-complete source-validation centers. C2 has two positive-bearing sequences, leaving binary sequence BA/AUROC undefined. In histology, we average within-patient patch metrics equally across patients. All target patients have positive patches; these summaries do not infer clinical patient or slide diagnoses.
+
+\paragraph{Data ethics.}
+This secondary analysis uses existing dataset releases and involves no new participant recruitment or image collection. The PolypGen authors document frame anonymization and site-specific consent and review procedures~\cite{ali2023polypgen}. The CAMELYON data collection was approved by the Commissie Mensgebonden Onderzoek regio Arnhem--Nijmegen (2016-2761), with informed consent waived~\cite{litjens2018camelyon}.
+
+\paragraph{Experimental families and controls.}
+The main experiment compares nine heads. The component analysis uses fixed $(K,\beta)\in\{1,4\}\times\{0,1\}$ and tests sensitivity to the decision threshold and source composition. The source-composition and second-encoder follow-ups are exploratory because we had inspected the original PolypGen results.
+
+The three centroids test which unit contributes equally within a class: image, group, or center. Unbalanced multi-prototype clustering retains inverse group-size weights and fixes $\beta=0$, so its comparison with CBMP tests whether tuning center balance adds value. The linear and cosine heads learn to separate classes jointly, whereas each prototype bank fits one class at a time. Their weighted variants test group and center weighting in a discriminative objective.
+
+
+CBMP's original grid has $K\in\{1,2,4,8\}$ and $\beta\in\{0,0.5,1\}$. Original candidate counts are 12/4/5/3/15/9 for CBMP, unbalanced prototypes, linear, cosine, weighted linear, and weighted cosine, with one per centroid. A second protocol uses four distinct configurations per tunable family, retaining fixed centroids. CBMP uses $\{1,4\}\times\{0,1\}$; the remaining grids are in the supplement. This changes parameter coverage as well as candidate count. Identical source fits are shared across protocols. Each PolypGen encoder supplies 880 target/head/seed evaluations. Each of the three histology encoders supplies 440, giving 3,080 evaluations across five task--encoder configurations. All use ten fitting seeds. These are repeated scores on fixed cohorts, not independent test samples or additional hospitals. The pathology extension adds representations to the existing cohort; it does not expand the patient population. The expanded grids and diagnostics remain exploratory after inspection of the original targets.
+
+\paragraph{Metrics and uncertainty.}
+Balanced accuracy (BA) is the mean of sensitivity and specificity. It gives the two classes equal weight even when a center contributes many more frames of one class. AUROC measures ranking across decision thresholds. Macro F1 summarizes thresholded predictions by class, while NLL and Brier score evaluate predicted probabilities. For the PolypGen summary, we average seed-specific metrics and then give each eligible target center equal weight. Thus C2, with 500 frames, has the same influence on mean BA as C6, with 2,187. Worst-center BA is the minimum of the four seed-averaged center scores. The supplementary materials provide per-center and per-seed metrics and selected settings.
+
+For a paired comparison, both heads are scored on the same resampled groups in each draw. The 2,000 bootstrap attempts (seed 2027) resample whole sequences within each PolypGen target and whole patients within each histology target. We retain only class-complete draws. All predictions from a sampled group move together, preserving dependence among its recorded frames or patches. Fitted heads and the original patch selection remain fixed. The intervals quantify sensitivity to the sampled groups within the observed centers. Seed variation is reported separately because repeating a fit on the same cohort does not supply additional test patients or hospitals.
+
+The supplementary analysis package contains the saved scores, selected settings, input hashes, and scripts needed to reconstruct the ranking diagnostics and paired contrasts.
+
+
+\paragraph{Execution and assurance.}
+Cached head fitting uses Python 3.12.3, NumPy 1.26.4, SciPy 1.13.1, and scikit-learn 1.5.1. UNI/CONCH extraction uses a separate Python 3.10.22/PyTorch 2.0.1+cu117 environment on a GTX 1660 Ti (6 GB), with deterministic float32 computation, batch 16 and four host threads. Source-only CPU/GPU feature checks and repeated-batch checks pass. The supplement records tolerances, environment versions, checkpoint/feature hashes and exact commands. Saved predictions and frozen source choices support reconstruction; automated checks do not replace author review.
+
+
+\subsection{PolypGen: Center-Specific Transfer}
+Table~\ref{tab:polypgen_results} reports ten-seed averages and fitting variation. CBMP reaches 58.05\% mean BA with ResNet18 and 59.92\% with DINOv2, versus 70.20\% for linear logistic and 68.35\% for trained cosine. Paired CBMP-minus-comparator differences are $-12.15$ points (conditional sequence-bootstrap 95\% interval $[-15.96,-8.34]$) and $-8.43$ ($[-11.27,-2.90]$). The displayed learned comparators have the highest observed target means; these conditional intervals do not adjust for selecting their names from the table.
+
+Figure~\ref{fig:polypgen_comparison} shows the site dependence. CBMP's lowest score occurs at C5 with ResNet18 and C2 with DINOv2. DINOv2-CBMP exceeds trained cosine at C6 (77.70\% versus 73.12\%), but the center average favors cosine. Average and worst-center criteria also select different heads: ResNet18's group-weighted centroid has the strongest worst-center BA (60.34\%); DINOv2's weighted cosine leads that criterion (62.25\%). Neither is a population worst-case guarantee.
+
+\input{tables/polypgen_results.tex}
+
+\input{fig/polypgen_comparison.tex}
+
+
+
+\paragraph{Component diagnostics.}
+Mean BA at $(K,\beta)=(1,0),(1,1),(4,0),(4,1)$ is 63.15\%, 60.48\%, 59.78\%, 59.42\% for ResNet18 and 64.03\%, 61.21\%, 64.48\%, 60.12\% for DINOv2. The balancing effect at $K=4$ minus its effect at $K=1$ is $2.31$ points for ResNet18 (paired 95\% interval $[-0.09,7.23]$) and $-1.54$ for DINOv2 ($[-6.57,4.07]$). Both intervals include zero. These ten-seed results do not resolve a uniform mean-BA interaction between multiplicity and balancing.
+
+\paragraph{Tuning sensitivity.}
+With four configurations per tunable family, CBMP reaches 60.56\% mean BA with ResNet18 and 60.25\% with DINOv2; linear (70.20\%) and cosine (68.22\%) remain the leading learned heads. The reduced grids change parameter coverage as well as count. Full paired sensitivity results are in the supplement.
+
+\paragraph{Sequence readout.}
+For the same frame-selected heads, the source-thresholded sequence rule gives mean BA over C4/C5/C6 of 39.25\% versus 70.14\% for ResNet18-CBMP versus linear, and 67.78\% versus 60.07\% for DINOv2-CBMP versus cosine. The latter point ordering differs from frame BA, but its paired difference of $+7.71$ points has interval $[-4.81,19.84]$. Aggregation, labels, and operating points change together. Sparse group support and sequence-length effects limit interpretation; C2 remains undefined at this binary endpoint.
+
+
+\subsection{CAMELYON17-WILDS: Frozen Pathology Encoders}
+\label{sec:pathology_foundation}
+
+We compare ResNet18, UNI, and CONCH on the same custom cohort, with identical target identities, source folds, head families, and fitting seeds. Table~\ref{tab:foundation_heads} focuses on the four-candidate source-only protocol. Historical-grid results and the full nine-head comparisons are reported separately. All heads are frozen and hashed before either target hospital is scored.
+
+\input{tables/foundation_heads}
+
+\paragraph{Representation changes and classifier differences.}
+At primary H2, trained cosine reaches 97.96\% BA with UNI and 96.88\% with CONCH, versus 86.73\% with ResNet18. CBMP reaches 95.80\%, 92.63\%, and 85.54\%, respectively. Both pathology encoders increase the displayed point estimates, while learned heads retain higher primary-target BA than source-selected CBMP. Encoder-associated gains therefore do not establish an advantage for prototype balancing or multiplicity. AUROC and all-head comparisons are provided in the supplement.
+
+\paragraph{Paired target uncertainty.}
+The H2 CBMP-minus-linear BA difference is $-1.92$ points for UNI (conditional patient-bootstrap 95\% interval $[-5.76,-0.07]$) and $-3.87$ for CONCH ($[-10.48,-0.52]$). At secondary H1, CONCH-CBMP reaches 93.79\% BA versus linear's 92.88\%; its $+0.91$-point interval $[-0.50,2.27]$ includes zero. These exploratory intervals use 2,000 paired patient-resampling attempts with fitted heads fixed, without adjustment for multiple comparisons. They do not quantify a population of hospitals.
+
+\paragraph{Which prototype rule was selected?}
+Under the four-candidate protocol, source validation selects $(K,\beta)=(1,1)$ for CONCH in all ten fitting seeds. Its selected CBMP therefore reduces to the center-balanced single-centroid case; the reported score is not evidence for a benefit from multiple prototypes. UNI instead selects $K=4$ in all ten seeds, with $\beta=0$ in seven and $\beta=1$ in three. The effective prototype rule depends on the representation and source-validation evidence. These selected configurations motivate reporting both the chosen rule and fixed $(K,\beta)$ controls; they do not establish why the selected rule transfers or fails at a particular hospital.
+
+
+
+\subsection{Where Does Ranking Break Down?}
+\label{sec:group_ranking}
+Unless stated otherwise, the ranking and patient-weighting diagnostics below use the original candidate grids. The foundation-encoder comparison in Section~\ref{sec:pathology_foundation} uses the four-candidate sensitivity protocol. The two sets of point estimates should therefore not be interchanged.
+Group-specific ranking has a precedent in covariate-adjusted ROC analysis~\cite{janes2009adjusting}. For each held-out center and fitting seed, we compare the positive-class scores of every positive--negative image pair. We record a win when the positive image scores higher and half a win for a tie. The same-group component asks whether a head separates the classes within sequences or patients containing both labels. The across-group component asks whether scores remain comparable between two distinct groups. If $\rho$ is the share of pairs drawn from the same group, then
+\begin{equation}
+    A_{\mathrm{pooled}}=\rho A_{\mathrm{same}}+(1-\rho)A_{\mathrm{across}}.
+    \label{eq:ranking_decomposition}
+\end{equation}
+A component is undefined when it has no eligible pairs, and such a component contributes zero weight to the pooled score.
+
+Ordinary AUROC implicitly gives a positive group with $n_g^+$ images and a negative group with $n_h^-$ images weight proportional to $n_g^+n_h^-$. Equal group-pair AUROC averages observed ordered group pairs uniformly. Class-support inspection identifies removals that make the endpoint undefined. All diagnostics use fixed scores and decisions after fitting. Factorial contrasts use 2,000 sequence-resampling attempts shared across settings, seeds, and encoders. We retain draws with the relevant component defined and report their counts alongside the intervals.
+
+\input{tables/group_ranking.tex}
+
+
+\paragraph{The selected rule.}
+At C5, all ten DINOv2 fits select $(K,\beta)=(1,0)$, a group-weighted centroid. An independent calculation through explicit source-group means verifies this analytic limit; its failure there is not unstable multi-prototype optimization. All 199 target positives belong to one sequence, with 51 negatives there and 731 in the other three. Same-sequence pairs have weight 6.52\% in Eq.~\ref{eq:ranking_decomposition}, combining 94.86\% Same and 55.33\% Across AUROC into 57.90\% pooled AUROC. All ten ResNet18 fits instead select $(2,1)$ at C5, so the observed rules have different mechanisms.
+
+The negative populations also differ: within the mixed sequence they are frames of a polyp-bearing recording, while the others belong to negative-only released sequences~\cite{ali2023polypgen}. Case mix and between-sequence score shifts are both compatible with the contrast. Removing C5's sole positive-bearing sequence or C2's sole negative-bearing sequence makes frame BA and AUROC undefined. The diagnostic locates a difference without establishing its clinical cause.
+
+
+\paragraph{Fixed choices and source selection.}
+Holding $K=4$ fixed at C5, DINOv2 balancing changes Same AUROC from 95.17\% to 95.43\% and Across from 76.91\% to 51.30\%. The Across difference is $-25.61$ points (conditional paired 95\% interval $[-45.59,-13.28]$, 1370 valid draws). The ResNet18 difference is $-7.55$ ($[-21.16,-2.48]$). Table~\ref{tab:factorial_ranking} gives all targets; effects vary with site and encoder.
+
+\input{tables/factorial_ranking.tex}
+
+
+Source selection also matters. At C5, DINOv2's $(1,0)$ setting has 68.00\% mean inner source BA, versus 58.00\% for $(4,0)$. Their target BA is 53.87\% versus 76.24\%. This reversal diagnoses a mismatch between source validation and the observed target. The source-selected head stays fixed throughout the analysis.
+
+
+\paragraph{Histology and patient weighting.}
+With ResNet18 and the original grids, equal patient-pair weighting at H2 changes the CBMP-minus-linear AUROC gap from $-2.59$ points to $-0.26$ with scores unchanged. Patient-macro patch BA is 79.04\% versus 80.27\%, with paired difference $-1.23$ ($[-3.98,2.71]$). At H1 the point ordering reverses: 71.35\% versus 70.15\%, or $+1.20$ ($[-3.35,6.75]$). Both macro-BA intervals include zero. These summaries expose dependence on patient weighting; they do not infer clinical patient diagnosis. Full results for both hospitals accompany the report.
+
+
+\subsection{Interpretation and Limits}
+The algorithmic contrasts locate ranking changes when prototype construction changes, without identifying an acquisition or clinical cause. A uniform group-score shift preserves Same AUROC. Case mix and between-group comparability therefore deserve separate examination rather than attribution to a single nuisance factor.
+
+At C5, resampling reuses one positive-bearing sequence; at C2, Across has one observed group pair. Zero-width conditional intervals can reflect that restricted support. Only 1,026 of 2,000 PolypGen draws retain both frame classes at every target. PolypGen patient linkage and excluded mappings remain unresolved. The earlier three-seed sequence-removal stress analysis is observational and inconclusive. All target-driven diagnostics remain exploratory.
+
+The pathology foundation-encoder comparison addresses representation coverage on the existing cohort, but adds no patients or hospitals. Its conclusions remain conditional on 9 primary and 8 secondary target patients, with no hospital-population inference. Absence of overlap between provider pretraining data and this cohort has not been independently established. The comparison is exploratory because these hospitals had already been inspected. More fitting seeds quantify variability on these same observations; they do not provide independent confirmation. Full official-split evaluation, a modern DG training comparison, resolved PolypGen patient linkage, and an untouched patient-linked cohort remain separate requirements.
+
+

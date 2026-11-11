@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "copied_byte_for_byte": true,
+      "origin": "isolated_datasets/polypgen_extensions_2026-10-20/reproducibility/sources/baseline/code/cbmp.py",
+      "path": "src/cbmp.py",
+      "sha256": "ec95d8fa07b1e9057132a8c66466d63b81f6b1116bb73ff12d2a0ed8f840871b"
+    },
+    {
+      "copied_byte_for_byte": true,
+      "origin": "isolated_datasets/polypgen_extensions_2026-10-20/reproducibility/sources/baseline/code/cbmp_evaluation.py",
+      "path": "src/cbmp_evaluation.py",
+      "sha256": "6b5f978731c3ee09d7909683942f305686bee714f2c0393b6d5fe71c9978e802"
+    },
+    {
+      "copied_byte_for_byte": true,
+      "origin": "isolated_datasets/polypgen_extensions_2026-10-20/reproducibility/sources/baseline/code/cbmp_data.py",
+      "path": "src/cbmp_data.py",
+      "sha256": "052bbfab383a164bddf31b27bf02a115df15e8a53d0c635383022080c97deff1"
+    },
+    {
+      "copied_byte_for_byte": true,
+      "origin": "isolated_datasets/polypgen_extensions_2026-10-20/reproducibility/sources/baseline/code/polypgen_manifest.py",
+      "path": "src/polypgen_manifest.py",
+      "sha256": "8eada291fd92d2c9be06bb17eb43dbba729f3b8e74be6df235d9d25812b9a83b"
+    }
+  ],
+  "scope": "unchanged scientific classifier implementation"
+}

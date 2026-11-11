@@ -1,0 +1,143 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{tikz}
+\usepackage{amsmath,booktabs,longtable}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{url}
+\title{Do Center-Balanced Prototypes Generalize?\\Supplementary Material}
+\author{Anonymous submission}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Study version and reproducible evidence}
+The original November 7 revision and the November 10 foundation extension use ten fitting seeds: 17, 29, 43, 61, 89, 101, 131, 173, 211, and 257. We refit all original-grid heads, the four-candidate sensitivity grids, and the fixed factorial cells on the existing audited feature caches. The two PolypGen encoders contribute 880 evaluations each; the original ResNet18 histology comparison contributes 440, for 2,200 original target/head/seed scores. UNI and CONCH add 880 evaluations, giving 3,080 in the combined study. They share fixed cohorts and are not independent test populations. Historical three-seed records remain archived separately.
+
+The separate November 7 reproduction bundle includes the original code, source-selection records, 3,793,240 prediction rows, platform wheel locks, and portable feature caches. Repeated prediction blocks are stored losslessly as NPZ objects with JSON indexes. The supplied materializer reconstructs each original CSV and checks its original SHA256. No numeric field is rounded. Original and relocated feature-container hashes and exact numerical-matrix hashes are recorded. Relocation changes local paths and corresponding manifest/container fingerprints while preserving features, labels, groups, centers, content hashes, and sample order. It is not a fresh raw-image audit.
+
+\section{Cohort support and endpoint eligibility}
+PolypGen inclusion follows the annotation and published center-provenance review described in the main paper~\cite{ali2023polypgen}. The reviewed cohort contains 5,444 frames and 37 sequences. C1 contributes three negative-only source sequences. C3 is excluded after mapping review. Review denotes the implemented provenance/annotation filter; it does not establish independently adjudicated patient identity.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule Target & Sequences & Positive-bearing & Negative-only & Mixed frame labels\\
+\midrule
+C2 & 2 & 2 & 0 & 1\\
+C4 & 10 & 4 & 6 & 3\\
+C5 & 4 & 1 & 3 & 1\\
+C6 & 18 & 8 & 10 & 8\\
+\bottomrule
+\end{tabular}
+\end{center}
+Positive-bearing denotes at least one audited positive frame. Thus C2 has both frame classes but only one sequence-presence class. Sequence BA and AUROC are undefined there. Patient linkage across PolypGen sequences remains unresolved.
+
+The custom CAMELYON17-WILDS subset contains 17,200 patches from 43 patients~\cite{bandi2019camelyon,koh2021wilds}. Label-blind hash selection retains at most 400 patches per patient and original partition; all eligible patients remain represented. H0/H3/H4 supply 26 source patients. H2 and H1 supply nine and eight target patients. Every target patient and sampled target slide contains both patch labels. Taking the maximum sampled patch label would therefore supply only a positive patient/slide class. We report patient-macro patch metrics, not clinical patient or slide classification.
+
+\section{Fitting and candidate grids}
+Linear logistic regression uses a 3,000-iteration limit, with a convergence failure raised before target scoring. The ordinary variant uses inverse class-frequency weights. The cosine head uses normalized class vectors, weighted cross-entropy, training temperature 0.1, and 300 full-batch Adam updates~\cite{kingma2015adam}, renormalizing vectors after every update. Adam moment factors are 0.9/0.999 and the denominator offset is $10^{-8}$. Supplied group/center weights replace class-frequency weights and are rescaled to mean one.
+
+Original grids use prototype $K\in\{1,2,4,8\}$ and CBMP $\beta\in\{0,0.5,1\}$; unbalanced prototypes fix $\beta=0$. Linear inverse regularization is $C\in\{0.01,0.1,1,10,100\}$ and cosine learning rate is $\{0.01,0.03,0.1\}$. Weighted learned heads cross their grids with the three beta values. Candidate counts are 12/4/5/3/15/9, with one configuration per centroid.
+
+The sensitivity protocol uses four distinct configurations per tunable family:
+\begin{itemize}
+\item CBMP: $K\in\{1,4\}$ crossed with $\beta\in\{0,1\}$.
+\item Unbalanced prototypes: $K\in\{1,2,4,8\}$ and $\beta=0$.
+\item Linear: $C\in\{0.1,1,10,100\}$.
+\item Cosine: learning rate $\{0.003,0.01,0.03,0.1\}$.
+\item Weighted linear: $C\in\{0.1,10\}$ crossed with $\beta\in\{0,1\}$.
+\item Weighted cosine: learning rate $\{0.01,0.1\}$ crossed with $\beta\in\{0,1\}$.
+\end{itemize}
+Fixed centroids retain one configuration. These grids change coverage as well as candidate count, and do not equalize computation. The report saves nominal candidate/validation-fit counts and measured unique fit times. Identical source fits are reused across matching configurations and both histology targets. Timing excludes parts of orchestration and is not total worker wall time.
+
+Prototype fitting uses five weighted initializations per class and retains the smallest training objective. Empty clusters or update norms at most $10^{-12}$ are reseeded using the largest weighted residual, without reusing a reseed row within that update. The limit is 100 updates or unchanged assignments. Realized class counts are bounded by requested $K$, class sample count, and groups containing that class. Source-validation ties follow candidate order, preferring smaller $K$, then beta for CBMP. Temperature minimizes mean source-fold NLL over log-temperature bounds $[-4,4]$. Target scores select no fitted configuration or temperature; the research-level diagnostic choices are nevertheless post hoc to the original targets.
+
+\section{Units, ranking, and conditional uncertainty}
+For each seed, heads are evaluated separately; averaging their metrics does not create an ensemble predictor. Seed SD describes fitting/selection variation on fixed data. Data intervals use 2,000 sequence/patient-resampling attempts with seed 2027 and fitted heads held fixed.
+
+For group multiplicity $b_g$, an ordered positive-group/negative-group cell $(g,h)$ receives pair-count weight $b_gb_h$. Same-group cells receive $b_g^2$; original group identity is retained even when a group is drawn repeatedly. Concordance gives half credit to ties. Pair counts reconstruct pooled AUROC to absolute tolerance $10^{-12}$. A component with no pairs is undefined. Equal group-pair AUROC averages the AUROC of observed eligible ordered group pairs uniformly. It is an alternative weighting, not a new-hospital population estimand.
+
+Only 1,026 of 2,000 draws retain both frame classes at all four PolypGen targets. Component counts differ: at C5, Same has 1,378 valid draws and Across 1,370. One mixed sequence supplies all C5 Same pairs; one ordered pair supplies C2 Across. Zero-width conditional intervals can consequently reflect a single observed pair. Resampling does not supply new examinations, resolve patient linkage, or estimate hospital-population variation.
+
+Sequence readout fixes the frame-selected head and takes the maximum raw margin per sequence. A separate threshold maximizes mean sequence BA at eligible source-validation centers; no target label selects it. Mean sequence summaries use C4/C5/C6, since C2 lacks negative-only sequences. Sequence length can influence this maximum. Patient-macro patch metrics average class-complete within-patient patch metrics equally across the observed patients. Paired aggregate intervals reconstruct those reported point estimates and use the same group multiplicities; they do not infer clinical patient labels. All 2,000 patient draws are supported here. Per-seed/per-center metrics, calibration scores, selections, and all paired contrasts are supplied as CSV files.
+
+\section{All seed-averaged image metrics}
+BA, BA seed SD, macro F1 and AUC are percentages; AUC denotes AUROC. NLL and Brier score retain their original units. These tables summarize ten fits per cell; every metric's seed SD and all individual seed results are in the accompanying CSV files.
+\input{tables/full_ten_seed_tables}
+
+\section{Fixed prototype contrasts and interaction uncertainty}
+Delta is beta 1 minus beta 0 at the stated fixed $K$, in AUROC points. Intervals condition on observed sequences and fixed fits; Valid counts the supported draws out of 2,000.
+\input{tables/review_factorial_intervals}
+The BA interaction is $(\mathrm{BA}_{4,1}-\mathrm{BA}_{4,0})-(\mathrm{BA}_{1,1}-\mathrm{BA}_{1,0})$, in percentage points.
+\input{tables/review_ba_interactions}
+
+\section{Candidate-grid sensitivity}
+Delta is four-candidate minus original-grid mean BA. The means equally weight the fixed target centers. These conditional comparisons describe the joint coverage/count change, not a causal effect of candidate count alone.
+\input{tables/review_budget_intervals}
+
+\section{Aggregate endpoint results}
+Sequence summaries equally weight C4/C5/C6 after averaging fits. Patient-macro summaries average within-patient patch BA/AUROC. Neither should be substituted for the original frame/patch endpoint without stating the changed prediction unit and weighting.
+\input{tables/review_group_endpoints}
+The paired table compares CBMP with linear for ResNet18/histology and cosine for DINOv2. It includes unsupported C2 sequence cells explicitly. Mean uses only the class-complete centers stated above. All other head contrasts are available in \path{paired_aggregate_intervals.csv}.
+\input{tables/review_aggregate_intervals}
+
+\section{Source selection, prototype stability, and semantic scope}
+At C5, all ten DINOv2 runs select $(1,0)$ and all ten ResNet18 runs select $(2,1)$. DINOv2 source-validation BA is 68.00\% for $(1,0)$ versus 58.00\% for $(4,0)$; target BA is 53.87\% versus 76.24\%. The target comparison diagnoses selection mismatch while retaining the original source choice.
+
+The audit matches prototypes by maximum-total-cosine one-to-one assignment within each class, over all 45 fitting-seed pairs. Unequal realized counts are reported without imputed matching scores. For selected heads, count and beta changes can accompany seed variation; fixed factorial cells separate that from configuration changes. The C5 table is an illustrative subset of 12,600 class-bank comparisons. Mean cosine averages pair-wise matched similarities; the final column is the lowest seed-pair mean.
+\input{tables/review_stability}
+
+An independent calculation through explicit source-group means verifies all 1,902 observed single-prototype limits to maximum absolute coordinate difference $1.03\times10^{-15}$. This checks an implementation identity, not clinical validity. The release also supplies 5,390 nearest-source example IDs. Geometric similarity and nearest examples alone do not establish clinically meaningful clusters. No independent clinical semantic assessment is asserted.
+
+\section{Execution and assurance}
+Feature extraction records CPU PyTorch 2.13.0/torchvision 0.28.0, with DINOv2 batch size 16/eight threads and histology batch size 64/four threads, both with zero loader workers. The new cached fitting environment uses CPython 3.12.3, NumPy 1.26.4, SciPy 1.13.1, scikit-learn 1.5.1, joblib 1.4.2 and Pillow 10.4.0. Two worker processes each use four numeric threads. Hash-locked Windows wheels pass dependency checks. Linux wheel hashes/dependency closure were checked; Linux execution has not been validated.
+
+A contemporaneous hardware observation on 7 November 2026 records AMD64 Family 23 Model 96, eight physical cores, sixteen logical CPUs and 15.37 GiB RAM. This observation is not a retrospective attestation of every historical extraction. The earlier broad environment's conflicts and extraction build records are retained. Global deterministic torch algorithms and cross-platform bitwise extraction were not established by the historical repeated-initial-batch checks.
+
+Eleven new protocol/archive tests and 33 archived classifier/manifest tests pass in the isolated environment. A fresh one-seed refit using relocated caches reproduces all 36 historical PolypGen/ResNet18 cells and 46,989 probabilities/decisions exactly. Every current prediction-derived metric is independently recomputed against worker reports; support is checked across all heads, protocols and seeds. The package verifies lossless CSV reconstruction as well as feature-array identity. These checks establish specified software properties. They do not replace author review of clinical labels, patient linkage, methods, citations, or interpretations. AI assistance is disclosed in the main paper; a named local author sign-off remains an author action rather than an automated attestation.
+
+\section{Completed UNI and CONCH extension}
+The extension uses exactly the same 17,200 patches and 43 recorded patients as the ResNet18 reference. It adds no patients or hospitals. Ten fitting seeds per encoder produce 20 completed task/seed jobs, 880 evaluations and 2,992,000 prediction rows. Original-grid and four-candidate results are retained separately. The new run supplies both patch and equal-patient patch metrics, never clinical patient diagnosis.
+
+\subsection{Pretrained features and source-only runtime checks}
+Cached head fitting uses Python 3.12.3, NumPy 1.26.4, SciPy 1.13.1, and scikit-learn 1.5.1. UNI and CONCH feature extraction uses a separate Python 3.10.22 environment with PyTorch 2.0.1+cu117, torchvision 0.15.2+cu117, and timm 0.9.8 on a GTX 1660 Ti (6 GB). Extraction uses deterministic float32 computation without autocast or TF32. Batch size 16 and four host threads were selected using 32 source patches only; normalized CPU/GPU feature differences were below $6\times10^{-6}$ for UNI and $5\times10^{-7}$ for CONCH. Repeated initial GPU batches were bitwise identical. Head fitting uses one worker and four numerical threads for the new encoders. Versioned requirements, checkpoint and feature hashes, executed commands, frozen source choices, and raw predictions support reconstruction. Automated checks do not replace author review of labels, code, and interpretations.
+
+UNI uses revision \texttt{b55a5ec6cade1a39edfe6534189a9b8ca7a022f0}; CONCH uses \texttt{f9ca9f877171a28ade80228fb195ac5d79003357}. The unprojected CONCH image feature is 512-dimensional; the unused caption decoder is absent from the released checkpoint and is the only permitted missing prefix. All required visual keys and supplied shapes are validated. Exact hashes and settings are provided in \path{evidence/foundation_checkpoint_registry.json} and \path{evidence/foundation_verification.json}.
+
+\subsection{All-head and protocol comparisons}
+The following tables compare identical sampled patients and candidate grids across all three histology encoders. Each cell reports the mean and fitting-seed SD; SD is not patient or hospital uncertainty. Historical grids, four-candidate grids and fixed factorial cells are separate comparisons.
+
+\input{tables/encoders_factorial_auroc.tex}
+\input{tables/encoders_factorial_balanced_accuracy.tex}
+\input{tables/encoders_historical_auroc.tex}
+\input{tables/encoders_historical_balanced_accuracy.tex}
+\input{tables/encoders_matched4_auroc.tex}
+\input{tables/encoders_matched4_balanced_accuracy.tex}
+
+\clearpage\subsection{Patient-macro patch readout and selected configurations}
+The patient-macro figure averages within-patient patch metrics equally across recorded patients. Its whiskers show fitting-seed SD. Conditional patient-bootstrap contrasts are included as CSV evidence; they do not quantify a population of hospitals. Under the four-candidate protocol CONCH selects $(K,\beta)=(1,1)$ in all ten fits; UNI selects $K=4$, with beta 0 in seven and beta 1 in three. These are source-selected configurations, not target-chosen settings.
+\input{fig/foundation_patient_macro}
+
+\subsection{Prototype audit and validation scope}
+The extension reports 5,040 class-bank seed-pair comparisons: 4,828 have matching realized counts and 212 have different counts, for which no similarity is imputed. All 800 single-prototype identity checks pass, with maximum coordinate error $8.33\times10^{-16}$. The audit records 2,448 nearest-source examples. None of these checks establishes clinical semantics or independent patient linkage. The additional targeted setup/protocol/report suite contains 17 passing tests, recorded separately from the historical 44 checks. Linux execution and independent clinical semantic assessment remain unvalidated.
+
+\subsection{Remaining validity limits}
+These previously inspected hospitals provide exploratory representation comparisons. Pretraining overlap has not been independently ruled out. The original and foundation caches differ in architecture, pretraining, preprocessing and runtime, so encoder-associated differences are descriptive. Neither more seeds nor additional encoders increases patient or hospital support. Full official WILDS and new patient-linked confirmation remain separate studies.
+
+\subsection{Prototype computational cost}
+\paragraph{Cost.}
+With cached $d$-dimensional features, $R$ restarts and $T$ updates cost approximately $O(RTNKd)$ for $N$ images. Stored prototypes and per-image post-encoder prediction cost $O(d\sum_cK_c)$. Encoder feature extraction is additional; prototype construction uses no gradient updates.
+
+\subsection{Patch-level encoder comparison figure}
+\input{fig/foundation_patch}
+
+\section{Limits and further validation protocol}
+Earlier threshold and sequence-removal diagnostics used three fitting seeds and remain versioned separately from the current ten-seed results. The removal analysis resampled observational source cohorts: dominant-center removal and approximately proportional scarcity matching preserve class coverage but can differ in frames and prevalence. It is inconclusive evidence about imbalance and is distinct from the algorithmic K-by-beta factorial. No controlled generative simulation or causal clinical mechanism is established.
+
+The cohort, patient identities, primary contrasts and tuning rules should be frozen before testing a new independent cohort. A mechanism contrast is beta 1 versus 0 at $K=4$, with Across AUROC and BA reported together. Positive-bearing and negative-only independent examinations are necessary for sequence inference; clinical patient/slide endpoints need separate labels. Hospital-population inference requires a suitable sampling design and more independent hospitals, not additional patches at the same sites. Rotating the five inspected WILDS hospitals would remain an exploratory custom protocol.
+
+The optional official-split adapter uses complete WILDS indices/evaluator, H0/H3/H4 training, H1 validation without refitting, H2 testing and ten seeds. External pretraining defines a non-standard setting under WILDS rules~\cite{wilds2026submission}. Prior H2 inspection remains disclosed. Original UNI and CONCH adapters record checkpoint hash, exact revision, preprocessing and feature definition~\cite{chen2024uni,lu2024conch}. Original UNI and CONCH provider/checkpoint integration and custom-cohort comparisons are now complete. Full official evaluation, modern DG training baselines and a new patient-linked cohort remain unexecuted. The released development protocol specifies those prerequisites without reporting them as completed experiments.
+
+\bibliographystyle{ieeenat_fullname}
+\bibliography{main}
+\end{document}
