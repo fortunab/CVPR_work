@@ -1,5 +1,4 @@
 # CPython 3.12, Windows x86_64, exact wheel hashes.
-# Generated from resolved wheel metadata on 7 November 2026.
 --only-binary=:all:
 colorama==0.4.6 --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
 iniconfig==2.0.0 --hash=sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374
