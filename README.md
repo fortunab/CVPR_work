@@ -1,6 +1,6 @@
 # Do Center-Balanced Prototypes Generalize?
 
-Minimal code for **A Controlled Study in Medical Imaging**. This repository keeps
+Code for **A Controlled Study in Medical Imaging**. This repository keeps
 the implemented paper methods, audited cohort manifests, five task/encoder
 configurations, tests, numerical summaries and LaTeX sources. Historical working
 folders, pilots, virtual environments, datasets, checkpoint binaries and full run
