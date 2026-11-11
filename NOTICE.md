@@ -12,8 +12,3 @@ should select the intended license before granting reuse permissions. Dependency
 and dataset licenses remain separate. UNI and CONCH code/weights are obtained
 from their providers under their own conditions; this repository grants no model
 access and redistributes no checkpoints or medical images.
-
-Names remain anonymous for review. Update CITATION.cff with the actual authors,
-publication record and DOI when appropriate. The accompanying manuscript's LLM
-Usage Statement describes AI assistance; automated validation is not a human
-clinical/code-review attestation.
