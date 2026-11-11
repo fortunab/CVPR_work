@@ -1,4 +1,3 @@
-"""Generate supplementary numerical tables from the completed review reports."""
 
 import argparse
 from pathlib import Path
