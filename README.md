@@ -12,7 +12,7 @@ centers only.
 
 ## Project website
 
-Visit the [https://anonymous.4open.science/w/CVPR_work-7DDE/](https://anonymous.4open.science/r/CVPR_work-7DDE/docs/index.html) for the method overview, interactive results, and reproduction guide.
+Visit the [https://anonymous.4open.science/w/CVPR_work-7DDE/](https://anonymous.4open.science/w/CVPR_work-7DDE/) for the method overview, interactive results, and reproduction guide.
 
 The website source is available in [`docs/index.html`](docs/index.html).
 
