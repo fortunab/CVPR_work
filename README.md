@@ -10,6 +10,13 @@ The study compares center-balanced multi-prototype classification (CBMP) with
 eight linear/cosine/prototype controls. Encoders are frozen; tuning uses source
 centers only.
 
+## Project website
+
+Visit the [https://anonymous.4open.science/w/CVPR_work-7DDE/](https://anonymous.4open.science/r/CVPR_work-7DDE/docs/index.html) for the method overview, interactive results, and reproduction guide.
+
+The website source is available in [`docs/index.html`](docs/index.html).
+
+
 ## Reproduce the complete study, including classifier fitting
 
 Follow [the ordered end-to-end guide](docs/REPRODUCE_ALL.md) to start from
