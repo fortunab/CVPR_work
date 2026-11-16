@@ -11,6 +11,7 @@ if [[ $(uname -s) != Linux || $(uname -m) != x86_64 ]]; then
   exit 1
 fi
 selection=${1:-heads}
+mkdir -p tmp
 case "$selection" in
   heads|vision|pathology) targets=("$selection") ;;
   all) targets=(heads vision pathology) ;;
