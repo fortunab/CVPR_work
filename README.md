@@ -153,7 +153,7 @@ docs/            Data, reproduction and GitHub upload instructions
 provenance/      Scientific source hashes and release validation
 ```
 
-See [GitHub upload instructions](docs/GITHUB_UPLOAD.md) and [scope/provenance](NOTICE.md).
+See [scope/provenance](NOTICE.md).
 `paper/main.tex` is the Overleaf entry point; `paper/supplementary.tex` compiles the
 separate supplement. Results remain limited to the recorded sequences and sampled
 patients; more seeds or encoders do not add independent hospitals.
