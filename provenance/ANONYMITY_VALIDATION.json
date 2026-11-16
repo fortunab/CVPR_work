@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-16",
+  "scope": "Tracked source content, static website, downloaded manuscript and recursively inspected source ZIP",
+  "identity_or_credential_findings": 0,
+  "pdf_author_field_empty": true,
+  "pdf_xmp_present": false,
+  "pdf_embedded_attachments": 0,
+  "third_party_license_attribution_preserved": true,
+  "review_repository_links_use_anonymous_mirror": true,
+  "public_owner_based_host_is_anonymous": false,
+  "live_anonymous_proxy_settings_verified": false,
+  "scientific_results_changed": false
+}

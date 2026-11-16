@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-16",
+  "platform": "x86_64-linux",
+  "runner": "Ubuntu 24.04",
+  "nix": "2.35.6",
+  "python": "3.12.8",
+  "numpy": "1.26.4",
+  "scipy": "1.13.1",
+  "scikit_learn": "1.5.1",
+  "pytest_passed": 62,
+  "pytest_skipped": 3,
+  "skip_reason": "Separate provider-runtime dependencies are not installed in the classifier environment.",
+  "flake_evaluation_passed": true,
+  "committed_lock_reproduced_unchanged": true,
+  "locked_classifier_installation_passed": true,
+  "pip_check_passed": true,
+  "recorded_summary_hash_check_passed": true,
+  "cli_help_check_passed": true,
+  "python310_runtime_available": true,
+  "feature_environment_installation_tested": false,
+  "full_raw_data_reproduction": false,
+  "cuda_tested": false,
+  "existing_environment_routes_modified": false,
+  "tested_files": {
+    "flake.nix": "7d1237dfc4568f9d9a6c6a75814f46e1965338544e66f00687ee7c52c8120591",
+    "flake.lock": "d5fabc162f32d7f15fb0afcbc7ea674a91e7719f3fd920401f615e8c24a5c5db",
+    "scripts/nix_setup.sh": "99d961253b8dd04079c78fb69b934dce781ecfa2c5daf583ae3c438307185261",
+    "scripts/nix_env.sh": "4dcd243ea908966d23b0e7b8b7a8d227da7d3de89696936e3d3e311ee0df5160",
+    "scripts/nix_check.sh": "c8f8e47c81046fbb1eb472d72b253dc7e4de9594dc49fc40bf26bfce37f16b09",
+    ".github/workflows/nix.yml": "3616ca4f4efeb5aa6c02d2e6115d1349f4dbc953ba373713646e13add3e43df8"
+  }
+}

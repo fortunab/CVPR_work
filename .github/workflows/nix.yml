@@ -1,0 +1,37 @@
+name: Optional Nix environment
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - flake.nix
+      - flake.lock
+      - scripts/nix_*.sh
+      - .github/workflows/nix.yml
+permissions:
+  contents: read
+jobs:
+  nix-heads:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Resolve pinned Nix inputs
+        run: |
+          nix flake lock
+          git diff --exit-code -- flake.lock
+      - name: Evaluate the optional shell
+        run: nix flake check --no-build
+      - name: Test locked heads inside Nix
+        run: nix develop --command bash scripts/nix_check.sh
+      - name: Keep the lock and environment record
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: nix-validation
+          path: |
+            flake.lock
+            tmp/nix-validation/

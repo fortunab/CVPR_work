@@ -4,6 +4,9 @@
   'use strict';
   const match = window.location.pathname.match(/^\/w\/([^/]+)(?:\/|$)/);
   if (!match) return;
+  document.querySelectorAll('[data-repository-link]').forEach(function (link) {
+    link.setAttribute('href', '/r/' + encodeURIComponent(decodeURIComponent(match[1])) + '/');
+  });
   const directory = document.documentElement.dataset.anonymousSourceDirectory || '';
   const base = '/r/' + encodeURIComponent(decodeURIComponent(match[1])) + '/' +
     (directory ? directory.replace(/^\/+|\/+$/g, '') + '/' : '');

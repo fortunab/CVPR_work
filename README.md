@@ -12,10 +12,16 @@ centers only.
 
 ## Project website
 
-Visit the [https://anonymous.4open.science/w/CVPR_work-7DDE/](https://anonymous.4open.science/w/CVPR_work-7DDE/) for the method overview, interactive results, and reproduction guide.
+Visit the [anonymous project website](https://anonymous.4open.science/w/CVPR_work-7DDE/) for the method overview, interactive results, and reproduction guide.
 
 The website source is available in [`docs/index.html`](docs/index.html).
 
+
+## Optional Nix setup
+
+For x86_64 Linux or WSL2, the [additional Nix guide](docs/NIX.md) provides pinned
+Python runtimes and separate environments using the existing requirements. It
+does not replace the PowerShell/Bash, venv or conda routes below.
 
 ## Reproduce the complete study, including classifier fitting
 

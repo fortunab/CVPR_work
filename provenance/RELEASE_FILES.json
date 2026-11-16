@@ -6,6 +6,11 @@
       "sha256": "5fc5e222fedd43a27c5e1feea9e58d5e80ecbb3c627bd69dd01de0afbc0d532c"
     },
     {
+      "bytes": 1047,
+      "path": ".github/workflows/nix.yml",
+      "sha256": "3616ca4f4efeb5aa6c02d2e6115d1349f4dbc953ba373713646e13add3e43df8"
+    },
+    {
       "bytes": 855,
       "path": ".github/workflows/tests.yml",
       "sha256": "e0fd43fab758b312966c093e68c4f2d017d236ba14c29d70b69d5570bf6edd9d"
@@ -16,19 +21,24 @@
       "sha256": "4076ea54e8151517ae5d2a05fb5eb93996d1abf292380d0963196b6187b1c9c4"
     },
     {
+      "bytes": 248,
+      "path": "ANONYMOUS_RELEASE.json",
+      "sha256": "82f8875918fb0fb21ad22c2c314875c505140110ef1bcd9ad72169ccda17f8cd"
+    },
+    {
       "bytes": 406,
       "path": "CITATION.cff",
       "sha256": "dcbebafbacc21f2b72cf036f322d5ac7dbe798f115a38e11cb740c0dce7e76df"
     },
     {
-      "bytes": 1090,
+      "bytes": 819,
       "path": "NOTICE.md",
-      "sha256": "0c57a16bdc2c39841324118676205edb207364c8c4e281956353eabec86ce765"
+      "sha256": "d5f89cc207c396bd0d0ccdef57362b595edd73204b952f01576a4579adbdd2b4"
     },
     {
-      "bytes": 8126,
+      "bytes": 8783,
       "path": "README.md",
-      "sha256": "9ff328657533520825dfbd3a3af9e26151c15456e66ab351703090178ef8aa60"
+      "sha256": "f3e878f780c629470185d186ed04311b9d1f207baa22684f64250cc3ac7ce145"
     },
     {
       "bytes": 1219,
@@ -56,9 +66,9 @@
       "sha256": "29e9c95da44eda9c71e7f1e4217c2990bb1e26f9fc34719d8ef831a5e29caae1"
     },
     {
-      "bytes": 3182,
-      "path": "docs/GITHUB_UPLOAD.md",
-      "sha256": "602f3c1bc88b498a2ab17df6194c082c5c427c77f09b222632c08d297266e4e3"
+      "bytes": 7597,
+      "path": "docs/NIX.md",
+      "sha256": "c8b19b3eb36e0ab54d8f4f91eed8a5bbf8155a1b40518643f999728108967e82"
     },
     {
       "bytes": 34514,
@@ -69,6 +79,16 @@
       "bytes": 11025,
       "path": "docs/REPRODUCTION.md",
       "sha256": "0121c6465acc284ab2ec7b14e7d1b84475ab5137e98e642b2ffa869826aa364e"
+    },
+    {
+      "bytes": 593,
+      "path": "flake.lock",
+      "sha256": "d5fabc162f32d7f15fb0afcbc7ea674a91e7719f3fd920401f615e8c24a5c5db"
+    },
+    {
+      "bytes": 1126,
+      "path": "flake.nix",
+      "sha256": "7d1237dfc4568f9d9a6c6a75814f46e1965338544e66f00687ee7c52c8120591"
     },
     {
       "bytes": 8180883,
@@ -261,6 +281,16 @@
       "sha256": "b6d8a90de08d84ddc35aa88db6241cb253f8e5c89cfdb4ca26e99a3f8e52d41a"
     },
     {
+      "bytes": 536,
+      "path": "provenance/ANONYMITY_VALIDATION.json",
+      "sha256": "4932b9a60ea6b6db245a38108af71bfcde2777e7f0df0f7d61b30e0863ab9e36"
+    },
+    {
+      "bytes": 1404,
+      "path": "provenance/NIX_VALIDATION.json",
+      "sha256": "8bec6f9fc1e1bd63ef0c9f5402d7342d6781335d80f291022b09298227c5765b"
+    },
+    {
       "bytes": 2907,
       "path": "provenance/RELEASE_VALIDATION.json",
       "sha256": "1b99101a9e47a8ae51625fae94014cc8e7fb71efdd2de985f3317e5d77e8fab9"
@@ -301,14 +331,14 @@
       "sha256": "20959b4ab5dd1a3ad79ebb1dca02a2e27dba1df4a8124bbc50499e87d33d1c5b"
     },
     {
-      "bytes": 1298,
+      "bytes": 1259,
       "path": "requirements/review-linux.lock",
-      "sha256": "cd4e30f0fe803f4578a76d9cc14a49a697341200e9dbac0059165ebf34c44281"
+      "sha256": "2d7f15992157d2d3d62c8c91c8b8173f9ed6a20e47e7c66236a1307f9d99beb9"
     },
     {
-      "bytes": 1191,
+      "bytes": 1129,
       "path": "requirements/review-windows.lock",
-      "sha256": "4764c4f9a2b444d8b094aef44581463b7d0e35a46588a71f84de55084024f725"
+      "sha256": "ccf50e9d09e218c7ed950982e167f283dff62944a0a79d701e81d73b2db3d852"
     },
     {
       "bytes": 275,
@@ -371,9 +401,9 @@
       "sha256": "b4dcad2c4555eed9d4c389c09b616357ea38a14eac3d88c3f3dcd20657175987"
     },
     {
-      "bytes": 14884,
+      "bytes": 14800,
       "path": "scripts/export_review_tables.py",
-      "sha256": "1c6c3ce514a1a8895bdb9677ae656cc4011082d6959d09177ffcfdeb09facfd7"
+      "sha256": "5af039ecf1f21f16019988706b9dbb4dd75fab0b7ed73cecaf54fd5a3355026c"
     },
     {
       "bytes": 2850,
@@ -404,6 +434,21 @@
       "bytes": 2385,
       "path": "scripts/import_local_artifacts.py",
       "sha256": "d8f6100c26636b575d44ca7c1f68b524e8ae73848e0f7ba72dffd5dfab42ac0c"
+    },
+    {
+      "bytes": 1113,
+      "path": "scripts/nix_check.sh",
+      "sha256": "c8f8e47c81046fbb1eb472d72b253dc7e4de9594dc49fc40bf26bfce37f16b09"
+    },
+    {
+      "bytes": 1059,
+      "path": "scripts/nix_env.sh",
+      "sha256": "4dcd243ea908966d23b0e7b8b7a8d227da7d3de89696936e3d3e311ee0df5160"
+    },
+    {
+      "bytes": 1647,
+      "path": "scripts/nix_setup.sh",
+      "sha256": "99d961253b8dd04079c78fb69b934dce781ecfa2c5daf583ae3c438307185261"
     },
     {
       "bytes": 24965,
@@ -509,7 +554,12 @@
       "bytes": 4337,
       "path": "tests/test_supplement_export_scope.py",
       "sha256": "69482503a8bad1e6a2b911bcad0f65acb99115fab3615c3779f35e400b8328cd"
+    },
+    {
+      "bytes": 0,
+      "path": "tmp/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "note": "Runtime artifacts are ignored; this manifest excludes itself."
+  "note": "Source-release manifest; excludes itself and generated website/download assets to avoid recursive archives."
 }

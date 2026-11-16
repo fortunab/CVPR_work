@@ -1,0 +1,8 @@
+{
+  "release": "anonymous-source",
+  "date": "2026-11-16",
+  "content_manifest": "provenance/RELEASE_FILES.json",
+  "includes_optional_nix_route": true,
+  "runtime_data_and_checkpoints_included": false,
+  "source_history_included": false
+}
