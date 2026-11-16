@@ -31,3 +31,122 @@ try{guideData=JSON.parse($('#recorded-guide').textContent);renderCode()}catch{$(
 $$('.repro-routes button').forEach(button=>button.addEventListener('click',()=>{shell=button.dataset.shell;environment=button.dataset.env;$$('.repro-routes button').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button))});renderCode()}));
 $$('.repro-steps button').forEach(button=>button.addEventListener('click',()=>{stage=button.dataset.stage;$$('.repro-steps button').forEach(b=>b.classList.toggle('active',b===button));renderCode()}));
 $('#copy-code').addEventListener('click',async()=>{const text=$('#repro-code').textContent;try{await navigator.clipboard.writeText(text);toast('Commands copied')}catch{const selection=window.getSelection(),range=document.createRange();range.selectNodeContents($('#repro-code'));selection.removeAllRanges();selection.addRange(range);toast('Select and copy the commands with your keyboard')}});
+
+// Inspect the SVG without rasterizing or changing the recorded results.
+const figureButton = $('.figure-zoom');
+const figureDialog = $('#figure-dialog');
+figureButton.addEventListener('pointermove', event => {
+  if (event.pointerType === 'touch') return;
+  const bounds = $('.figure-viewport').getBoundingClientRect();
+  figureButton.style.setProperty('--zoom-x', `${Math.max(0, Math.min(100, (event.clientX - bounds.left) / bounds.width * 100))}%`);
+  figureButton.style.setProperty('--zoom-y', `${Math.max(0, Math.min(100, (event.clientY - bounds.top) / bounds.height * 100))}%`);
+});
+figureButton.addEventListener('pointerleave', () => {
+  figureButton.style.removeProperty('--zoom-x');
+  figureButton.style.removeProperty('--zoom-y');
+});
+figureButton.addEventListener('click', () => {
+  const enlarged = $('#embedding').cloneNode(true);
+  // Keep SVG resource IDs unique when the original and enlarged views coexist.
+  enlarged.removeAttribute('id');
+  enlarged.querySelectorAll('[id]').forEach(node => {
+    if (node.id === 'grid') node.id = 'enlarged-grid';
+    else node.removeAttribute('id');
+  });
+  enlarged.querySelector('[fill="url(#grid)"]').setAttribute('fill', 'url(#enlarged-grid)');
+  $('#enlarged-embedding').replaceChildren(enlarged);
+  closeStatTips();
+  setContentsOpen(false);
+  figureDialog.showModal();
+  document.body.classList.add('figure-open');
+});
+$('.dialog-close').addEventListener('click', () => figureDialog.close());
+figureDialog.addEventListener('click', event => {
+  if (event.target !== figureDialog) return;
+  const bounds = figureDialog.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) figureDialog.close();
+});
+figureDialog.addEventListener('close', () => {
+  document.body.classList.remove('figure-open');
+  figureButton.focus({preventScroll:true});
+});
+
+// One explanation at a time; hover, focus and touch share the same state.
+const statItems = $$('.stat-item');
+function closeStatTips(except) {
+  statItems.forEach(item => {
+    if (item === except) return;
+    item.classList.remove('is-open');
+    item.querySelector('.stat-info').setAttribute('aria-expanded', 'false');
+    delete item.dataset.pinned;
+  });
+}
+function openStatTip(item) {
+  closeStatTips(item);
+  item.classList.add('is-open');
+  item.querySelector('.stat-info').setAttribute('aria-expanded', 'true');
+}
+statItems.forEach(item => {
+  const button = item.querySelector('.stat-info');
+  item.addEventListener('pointerenter', event => { if (event.pointerType !== 'touch') openStatTip(item); });
+  item.addEventListener('pointerleave', () => { if (!item.dataset.pinned && !item.contains(document.activeElement)) closeStatTips(); });
+  button.addEventListener('focus', () => openStatTip(item));
+  button.addEventListener('click', () => {
+    if (item.dataset.pinned) closeStatTips();
+    else { openStatTip(item); item.dataset.pinned = 'true'; }
+  });
+  item.addEventListener('focusout', event => {
+    if (!item.contains(event.relatedTarget)) closeStatTips();
+  });
+});
+document.addEventListener('click', event => {
+  if (!event.target.closest('.stat-item')) closeStatTips();
+  if (!event.target.closest('.section-menu')) setContentsOpen(false);
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  closeStatTips();
+  if ($('.section-menu').classList.contains('is-open')) {
+    setContentsOpen(false);
+    $('.contents-toggle').focus();
+  }
+});
+
+const contents = $('.section-menu');
+const contentsToggle = $('.contents-toggle');
+function setContentsOpen(open) {
+  contents.classList.toggle('is-open', open);
+  contentsToggle.setAttribute('aria-expanded', String(open));
+  contentsToggle.querySelector('span').textContent = open ? '−' : '+';
+}
+contentsToggle.addEventListener('click', () => setContentsOpen(!contents.classList.contains('is-open')));
+const sectionLinks = $$('#section-links a');
+const sections = sectionLinks.map(link => $(link.getAttribute('href')));
+sectionLinks.forEach(link => link.addEventListener('click', () => {
+  setContentsOpen(false);
+  // Preserve native fragment navigation and move keyboard focus to its destination.
+  const section = $(link.getAttribute('href'));
+  section.setAttribute('tabindex', '-1');
+  section.focus({preventScroll:true});
+}));
+let scrollScheduled = false;
+function updateCurrentSection() {
+  scrollScheduled = false;
+  let current = sections[0];
+  const offset = $('.site-header').getBoundingClientRect().height + 36;
+  sections.forEach(section => { if (section.getBoundingClientRect().top <= offset) current = section; });
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) current = sections[sections.length - 1];
+  sectionLinks.forEach(link => {
+    if (link.getAttribute('href') === '#' + current.id) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+}
+function scheduleSectionUpdate() {
+  if (scrollScheduled) return;
+  scrollScheduled = true;
+  window.requestAnimationFrame(updateCurrentSection);
+}
+window.addEventListener('scroll', scheduleSectionUpdate, {passive:true});
+window.addEventListener('resize', () => { setContentsOpen(false); scheduleSectionUpdate(); });
+updateCurrentSection();
+
