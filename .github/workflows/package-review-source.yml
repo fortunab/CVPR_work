@@ -1,0 +1,57 @@
+name: Build reviewed source archive
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/simple-python311-reproduction]
+    paths:
+      - .github/workflows/package-review-source.yml
+      - provenance/RELEASE_FILES.json
+permissions:
+  contents: write
+jobs:
+  source-archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Verify every source member and create the archive blob
+        env:
+          SOURCE_BLOB_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, io, json, os, urllib.request, zipfile
+          manifest = Path('provenance/RELEASE_FILES.json')
+          records = json.loads(manifest.read_text())['files']
+          names = set()
+          for record in records:
+              path = Path(record['path'])
+              if path.is_absolute() or '..' in path.parts or not path.is_file():
+                  raise ValueError('Invalid source-release member')
+              value = path.read_bytes()
+              if len(value) != record['bytes'] or hashlib.sha256(value).hexdigest() != record['sha256']:
+                  raise ValueError('Source-release checksum mismatch: ' + record['path'])
+              names.add(record['path'])
+          names.add(manifest.as_posix())
+          stream = io.BytesIO()
+          with zipfile.ZipFile(stream, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+              for name in sorted(names):
+                  info = zipfile.ZipInfo(name, date_time=(2026,11,17,0,0,0))
+                  info.create_system = 0
+                  info.external_attr = 0o100644 << 16
+                  info.compress_type = zipfile.ZIP_DEFLATED
+                  archive.writestr(info, Path(name).read_bytes())
+          value = stream.getvalue()
+          payload = json.dumps({'content':base64.b64encode(value).decode(), 'encoding':'base64'}).encode()
+          url = os.environ['GITHUB_API_URL'] + '/repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs'
+          request = urllib.request.Request(url, data=payload, method='POST', headers={
+              'Authorization':'Bearer '+os.environ['SOURCE_BLOB_TOKEN'], 'Accept':'application/vnd.github+json',
+              'X-GitHub-Api-Version':'2022-11-28', 'Content-Type':'application/json'})
+          with urllib.request.urlopen(request, timeout=120) as response:
+              result = json.load(response)
+          print(json.dumps({'blob_sha':result['sha'], 'archive_sha256':hashlib.sha256(value).hexdigest(),
+                            'bytes':len(value), 'verified_source_files':len(names)}))
+          PY

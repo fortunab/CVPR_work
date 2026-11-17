@@ -42,6 +42,7 @@ def process_env(extra=None):
     temporary.mkdir(parents=True, exist_ok=True)
     for name in ('TEMP', 'TMP', 'TMPDIR'):
         env[name] = str(temporary)
+    env['PIP_CACHE_DIR'] = str(ROOT / '.reproduce/pip-cache')
     env.update(extra or {})
     return env
 
@@ -100,6 +101,9 @@ def find_python(requested=None):
 
 
 def setup(args):
+    if args.features and not shutil.which('git'):
+        raise RuntimeError('Git is required to install the original CONCH provider source. '
+                           'Install Git, or omit --features for cached-feature refitting.')
     profiles = PROFILES if args.features else ['heads']
     state_path = ROOT / '.reproduce/state.json'
     previous = json.loads(state_path.read_text(encoding='utf-8')) if state_path.exists() else {}

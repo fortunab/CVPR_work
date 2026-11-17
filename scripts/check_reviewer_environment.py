@@ -122,6 +122,16 @@ def main():
             raise RuntimeError('pip check failed: ' + (installed.stdout + installed.stderr).strip())
         record['pip_check_passed'] = True
         record['versions'] = check_versions(args.profile)
+        from PIL import features as image_features
+        record['image_codecs'] = {'jpeg': image_features.version('jpg'),
+                                  'libjpeg_turbo': image_features.version('libjpeg_turbo')}
+        if args.profile == 'vision' and record['image_codecs']['jpeg'] != '9.0':
+            record['warnings'] = [
+                'The original PolypGen JPEG pixels were decoded with libjpeg 9. '
+                'Other JPEG builds can change fresh features even with Pillow 10.4.0. '
+                'Exact original-cache refitting avoids this decoding difference; '
+                'do not infer raw-image numerical agreement from this installation check.'
+            ]
         with redirect_stdout(io.StringIO()):
             modules, probes = dependency_smoke(args.profile)
         record.update(checked_imports=modules, dependency_probes=probes, status='passed')
