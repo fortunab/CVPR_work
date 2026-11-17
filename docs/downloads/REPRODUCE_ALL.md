@@ -1,4 +1,8 @@
-# Reproduce the study
+# Short tutorial
+
+This is the compact launcher workflow. For separate environment commands,
+the complete experiment matrix and explicit execution of every scientific stage,
+use the separate **[Complete end-to-end tutorial](REPRODUCE_COMPLETE.md)**.
 
 Use **Python 3.11** with either venv or conda. The same commands below work in
 PowerShell and Bash; run them from the complete source root, not from `docs/`.

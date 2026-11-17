@@ -23,7 +23,18 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import base64, hashlib, io, json, os, urllib.request, zipfile
+          import base64, hashlib, io, json, os, re, shlex, subprocess, urllib.request, zipfile
+          count = 0
+          for name in ['docs/REPRODUCE_COMPLETE.md', 'docs/REPRODUCE_ALL.md']:
+              text = Path(name).read_text()
+              for block in re.findall(r'```bash\n(.*?)```', text, re.S):
+                  subprocess.run(['bash', '-n'], input=block, text=True, check=True)
+                  count += 1
+                  for line in block.splitlines():
+                      if ' -c ' in line:
+                          words = shlex.split(line)
+                          compile(words[words.index('-c')+1], '<documented Python>', 'exec')
+          print(json.dumps({'bash_blocks_checked':count}))
           manifest = Path('provenance/RELEASE_FILES.json')
           records = json.loads(manifest.read_text())['files']
           names = set()

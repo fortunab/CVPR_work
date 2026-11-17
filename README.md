@@ -4,7 +4,17 @@ A controlled study in medical imaging: frozen features, nine classifier heads,
 five task/encoder settings, ten fitting seeds and three source-only protocols.
 
 [Project website](https://anonymous.4open.science/w/CVPR_work-7DDE/) ·
-[Reproduction guide](docs/REPRODUCE_ALL.md) · [Data access](docs/DATA.md)
+[Complete end-to-end](docs/REPRODUCE_COMPLETE.md) ·
+[Short tutorial](docs/REPRODUCE_ALL.md) · [Data access](docs/DATA.md)
+
+## Choose a tutorial
+
+- **[Complete end-to-end](docs/REPRODUCE_COMPLETE.md):** explicit PowerShell/Bash
+  and venv/conda setup, real-image preparation, every experiment/configuration,
+  classifier training, uncertainty/stability analyses and paper exports.
+- **[Short tutorial](docs/REPRODUCE_ALL.md):** the compact launcher workflow below.
+
+Both use Python 3.11 and the same scientific code, inputs, seeds and models.
 
 ## Reproduce with a few commands
 
@@ -56,7 +66,7 @@ python reproduce.py images --polypgen-root /path/to/polypgen --camelyon-root /pa
 
 `images` verifies the canonical images/checkpoints, extracts all five feature
 sets and runs the full classifier study. The pretrained encoders stay frozen.
-See the [short complete guide](docs/REPRODUCE_ALL.md) for archive/parquet staging,
+See the [Complete end-to-end guide](docs/REPRODUCE_COMPLETE.md) for archive/parquet staging,
 local checkpoints, CPU/GPU selection and a smaller first refit.
 
 ## What is portable, and what is fixed?
