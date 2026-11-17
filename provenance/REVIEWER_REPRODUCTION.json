@@ -22,8 +22,168 @@
   "genuine_refits": {
     "date": "2026-11-17",
     "scope": "Five original feature caches were hash-verified. Completed genuine classifier refits are listed individually below and compared to the corresponding original per-seed runs, not to ten-seed averages.",
-    "completed_task_seed_jobs": 11,
+    "completed_task_seed_jobs": 19,
     "jobs": [
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 101,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 131,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 17,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 173,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 29,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 43,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 61,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 89,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
       {
         "environment": "venv",
         "task": "polypgen_resnet18",
@@ -40,7 +200,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -58,7 +220,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -76,7 +240,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -94,7 +260,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -112,7 +280,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -130,7 +300,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -148,7 +320,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -166,7 +340,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -184,7 +360,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "venv",
@@ -202,7 +380,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 1.4827565841812884e-09,
         "prediction_csv_byte_identical": false,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       },
       {
         "environment": "conda",
@@ -220,7 +400,9 @@
         "selected_configurations_match": true,
         "maximum_temperature_difference": 0.0,
         "prediction_csv_byte_identical": true,
-        "within_1e_minus_8": true
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
       }
     ],
     "full_fifty_job_refit_complete": false,

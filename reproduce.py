@@ -253,9 +253,10 @@ def compare_report(report, full):
                 count = metric + '_valid_seeds'
                 if int(row[count]) != 10 or int(row[count]) != int(expected[count]):
                     raise ValueError('Complete-study valid-seed count differs: ' + metric)
-    # Absolute fraction/score tolerance; far below the paper's printed precision.
+    # Cross-platform refits use float32 input features and platform BLAS builds.
+    # An absolute 1e-6 fraction/score bound is below the printed table precision.
     # Every measured difference is retained, including differences below this bound.
-    tolerance = 1e-8
+    tolerance = 1e-6
     result = {'scope': 'recomputed predictions versus released ten-seed means',
               'complete_five_task_ten_seed_study': full, 'result_rows_compared': len(actual),
               'report_sha256': digest(report / 'image_metrics_seed_means.csv'),
