@@ -1,6 +1,7 @@
 # Environments and private credentials
 .venv*/
 .conda/
+.reproduce/
 .env
 .env.*
 !.env.example
