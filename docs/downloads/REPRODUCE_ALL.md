@@ -108,6 +108,8 @@ The selected run directory contains fitted heads, source selections, predictions
 the actual environment record and completion marker. Its associated reports and
 exports contain newly computed results and a machine-readable comparison to the
 tracked summaries. Read that comparison before claiming agreement with the paper.
+Full-study means and seed standard deviations use an absolute 1e-6 score tolerance
+for cross-platform numerical agreement; every measured difference is retained.
 Missing data, invalid checkpoints, changed receipts and incomplete studies fail
 with an actionable error rather than returning the paper's saved numbers.
 
