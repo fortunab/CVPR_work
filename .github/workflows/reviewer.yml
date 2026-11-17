@@ -1,0 +1,66 @@
+name: Reviewer reproduction setup
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - reproduce.py
+      - requirements/reviewer-*.txt
+      - scripts/check_reviewer_environment.py
+      - tests/**
+      - src/**
+      - scripts/run_experiments.py
+      - scripts/data_catalog.py
+      - .github/workflows/reviewer.yml
+permissions:
+  contents: read
+jobs:
+  classifier-setup:
+    name: Classifiers (${{ matrix.os }}, ${{ matrix.manager }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+        manager: [venv, conda]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        id: python
+        with:
+          python-version: '3.11'
+      - name: Make conda available
+        if: matrix.manager == 'conda'
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: ''
+          auto-activate: false
+          channels: conda-forge
+          channel-priority: strict
+      - name: Create the selected reviewer environment
+        shell: pwsh
+        run: '& "${{ steps.python.outputs.python-path }}" reproduce.py setup --manager ${{ matrix.manager }}'
+      - name: Check packages, run tests and verify recorded summaries
+        shell: pwsh
+        run: '& "${{ steps.python.outputs.python-path }}" reproduce.py check'
+  feature-setup:
+    name: Feature APIs (${{ matrix.os }}, venv)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        id: python
+        with:
+          python-version: '3.11'
+      - name: Install all three isolated Python 3.11 environments
+        shell: pwsh
+        run: '& "${{ steps.python.outputs.python-path }}" reproduce.py setup --manager venv --features'
+      - name: Test classifier and provider APIs without data or checkpoints
+        shell: pwsh
+        run: '& "${{ steps.python.outputs.python-path }}" reproduce.py check --features'

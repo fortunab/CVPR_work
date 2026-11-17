@@ -1,8 +1,8 @@
 {
   description = "Optional Linux development shell for the anonymous frozen-feature study";
 
-  # This revision retains both Python 3.12 and the legacy Python 3.10 provider
-  # runtime. Scientific Python packages still come from the existing lock files.
+  # All reviewer environments use Python 3.11. Scientific Python packages come
+  # from the portable reviewer requirements, separately for each model stack.
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/50ab793786d9de88ee30ec4e4c24fb4236fc2674";
 
   outputs = { self, nixpkgs }:
@@ -13,7 +13,7 @@
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
           bashInteractive coreutils git curl cacert pkg-config
-          python312 python310
+          python311
         ];
         CBMP_NIX_SHELL = "1";
         PYTHONNOUSERSITE = "1";

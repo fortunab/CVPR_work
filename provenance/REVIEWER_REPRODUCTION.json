@@ -1,0 +1,501 @@
+{
+  "date": "2026-11-17",
+  "python_minor": "3.11",
+  "reviewer_setup": "Portable version-constrained requirements; pip selects platform wheels.",
+  "os_specific_wheel_hash_files_required": false,
+  "ci_platforms": [
+    "Windows x86_64",
+    "Ubuntu 24.04 x86_64"
+  ],
+  "ci_classifier_managers": [
+    "venv",
+    "conda"
+  ],
+  "ci_feature_profiles": [
+    "vision",
+    "pathology"
+  ],
+  "ci_all_six_jobs_passed": true,
+  "ci_classifier_tests_passed": 69,
+  "ci_classifier_provider_tests_skipped": 3,
+  "ci_provider_tests_run_in_separate_feature_jobs": true,
+  "genuine_refits": {
+    "date": "2026-11-17",
+    "scope": "Five original feature caches were hash-verified. Completed genuine classifier refits are listed individually below and compared to the corresponding original per-seed runs, not to ten-seed averages.",
+    "completed_task_seed_jobs": 19,
+    "jobs": [
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 101,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 131,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 17,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 173,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 29,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 43,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 61,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_dinov2",
+        "seed": 89,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.9687759361962662e-08,
+          "brier_score": 7.868907581087825e-09
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 2.672977794659914e-07,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": false,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 101,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 131,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 17,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 173,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 211,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 257,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 29,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 43,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 61,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "venv",
+        "task": "polypgen_resnet18",
+        "seed": 89,
+        "evaluations": 88,
+        "metric_values_compared": 440,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 2.2161794621666786e-10,
+          "brier_score": 4.2845005321368035e-11
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 1.4827565841812884e-09,
+        "prediction_csv_byte_identical": false,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      },
+      {
+        "environment": "conda",
+        "task": "camelyon_resnet18",
+        "seed": 17,
+        "evaluations": 44,
+        "metric_values_compared": 220,
+        "maximum_absolute_difference": {
+          "balanced_accuracy": 0.0,
+          "auroc": 0.0,
+          "macro_f1": 0.0,
+          "negative_log_likelihood": 0.0,
+          "brier_score": 0.0
+        },
+        "selected_configurations_match": true,
+        "maximum_temperature_difference": 0.0,
+        "prediction_csv_byte_identical": true,
+        "within_1e_minus_8": true,
+        "metrics_within_1e_minus_6": true,
+        "all_five_metrics_at_four_decimals_match": true
+      }
+    ],
+    "full_fifty_job_refit_complete": false,
+    "raw_image_study_repeated": false
+  },
+  "full_study_run_status": "in_progress",
+  "fresh_all_image_extraction_completed": false,
+  "guaranteed_on_every_machine": false,
+  "limits": [
+    "Compatible Python 3.11 and OS/architecture wheels are required.",
+    "Feature reconstruction requires real images and approved checkpoint access.",
+    "Local older Anaconda activation failed; hosted conda routes passed, and a fresh local conda prefix passed direct interpreter checks.",
+    "No universal bitwise reproduction claim is made.",
+    "Pip Pillow wheels decode tested PolypGen JPEGs differently from the original libjpeg 9 build. Default fresh-image numerical agreement is not established."
+  ],
+  "real_image_probe_scope": "Four genuine source images per probed encoder; frozen forward passes only, not full-cohort extraction or an image-to-paper rerun.",
+  "real_image_probes": [
+    {
+      "task": "polypgen_resnet18",
+      "source_image_count": 4,
+      "raw_source_image_hashes_verified": true,
+      "repeated_cpu_forward_bitwise_identical": true,
+      "allclose_to_original_cache": false,
+      "maximum_absolute_coordinate_error": 0.003959521651268005,
+      "minimum_cosine": 0.9997524152019631,
+      "diagnostic_original_decoded_pixels": {
+        "allclose_to_original_cache": true,
+        "maximum_absolute_coordinate_error": 1.4901161193847656e-08,
+        "scope": "Original libjpeg-9-decoded source pixels isolate the decoder; this is not the default pip image route."
+      }
+    },
+    {
+      "task": "polypgen_dinov2",
+      "source_image_count": 4,
+      "raw_source_image_hashes_verified": true,
+      "repeated_cpu_forward_bitwise_identical": true,
+      "allclose_to_original_cache": false,
+      "maximum_absolute_coordinate_error": 0.004646630026400089,
+      "minimum_cosine": 0.9993252938732681,
+      "diagnostic_original_decoded_pixels": {
+        "allclose_to_original_cache": true,
+        "maximum_absolute_coordinate_error": 7.450580596923828e-09,
+        "scope": "Original libjpeg-9-decoded source pixels isolate the decoder; this is not the default pip image route."
+      }
+    },
+    {
+      "task": "camelyon_resnet18",
+      "source_image_count": 4,
+      "raw_source_image_hashes_verified": true,
+      "repeated_cpu_forward_bitwise_identical": true,
+      "allclose_to_original_cache": true,
+      "maximum_absolute_coordinate_error": 2.9802322387695312e-08,
+      "minimum_cosine": 0.999999999999999
+    },
+    {
+      "task": "camelyon_custom_uni",
+      "source_image_count": 4,
+      "raw_source_image_hashes_verified": true,
+      "repeated_cpu_forward_bitwise_identical": true,
+      "allclose_to_original_cache": true,
+      "maximum_absolute_coordinate_error": 1.1827796697616577e-06,
+      "minimum_cosine": 0.9999999999747915
+    },
+    {
+      "task": "camelyon_custom_conch",
+      "source_image_count": 4,
+      "raw_source_image_hashes_verified": true,
+      "repeated_cpu_forward_bitwise_identical": true,
+      "allclose_to_original_cache": true,
+      "maximum_absolute_coordinate_error": 3.203749656677246e-07,
+      "minimum_cosine": 0.9999999999964289
+    }
+  ],
+  "known_polypgen_jpeg_difference": {
+    "original_decoder": "libjpeg 9",
+    "fresh_pip_wheel_decoder": "libjpeg-turbo 3.0.3 / JPEG ABI 8",
+    "same_pillow_version": "10.4.0",
+    "decoded_pixels_differ": true,
+    "original_pixel_hashes_confirmed_with_original_decoder": true,
+    "cause_isolated_on_four_source_images": true,
+    "full_image_to_paper_agreement_verified": false
+  },
+  "local_venv_setup_and_checks": {
+    "python": "3.11.15",
+    "profiles": [
+      "heads",
+      "vision",
+      "pathology"
+    ],
+    "all_three_dependency_checks_passed": true,
+    "classifier_tests_passed": 69,
+    "provider_tests_skipped_in_heads": 3,
+    "provider_tests_passed_in_pathology": 3,
+    "full_short_launcher_check_features_exit_code": 0
+  }
+}

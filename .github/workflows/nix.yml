@@ -6,6 +6,8 @@ on:
       - flake.nix
       - flake.lock
       - scripts/nix_*.sh
+      - requirements/reviewer-*.txt
+      - scripts/check_reviewer_environment.py
       - .github/workflows/nix.yml
 permissions:
   contents: read
@@ -25,7 +27,7 @@ jobs:
           git diff --exit-code -- flake.lock
       - name: Evaluate the optional shell
         run: nix flake check --no-build
-      - name: Test locked heads inside Nix
+      - name: Test portable reviewer heads inside Nix
         run: nix develop --command bash scripts/nix_check.sh
       - name: Keep the lock and environment record
         if: always()

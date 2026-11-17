@@ -1,75 +1,9 @@
-<!doctype html><html lang="en" data-anonymous-source-directory="docs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Optional Nix setup · CBMP</title><meta name="description" content="Additional Nix setup for x86_64 Linux and WSL2 alongside the existing study reproduction routes."><link rel="stylesheet" href="styles.css?v=20261116-2"><script src="proxy-compat.js" defer></script></head><body><a class="skip" href="#guide">Skip to guide</a><header class="site-header"><div class="header-inner"><a class="brand" href="index.html">cbmp<span class="brand-dot">.</span></a><nav aria-label="Main navigation"><a href="index.html#results">The evidence</a><a href="guide.html">Complete guide</a></nav><a class="header-download repository-link" data-repository-link href="https://anonymous.4open.science/r/CVPR_work-7DDE/">Repository <span aria-hidden="true">↗</span></a></div></header><div class="wrap guide-banner"><a href="index.html#reproduce">← Back to the project</a></div><main class="wrap guide-layout"><nav class="guide-nav" aria-label="Nix guide contents"><span class="tiny-label">OPTIONAL NIX ROUTE</span><a href="#1-install-nix-and-obtain-the-full-source">1. Install Nix and obtain the full source</a><a href="#2-quick-check-of-the-classifier-environment">2. Quick check of the classifier environment</a><a href="#3-add-the-image-feature-environments">3. Add the image-feature environments</a><a href="#4-continue-the-existing-bash-reproduction-steps">4. Continue the existing Bash reproduction steps</a><a href="#validation-scope">Validation scope</a><a href="#troubleshooting">Troubleshooting</a><a href="downloads/NIX.md" download>Download this guide ↓</a></nav><article class="guide-content" id="guide"><h1 id="optional-nix-route-linux-and-wsl2">Optional Nix route: Linux and WSL2</h1>
-<p>This is an additional setup route for <strong>x86_64 Linux</strong>, including a Linux distribution in <strong>Windows WSL2</strong>. The existing PowerShell/Bash, venv and conda routes remain available as documented in <a href="guide.html">the complete reproduction guide</a>.</p>
-<p>Nix supplies Python 3.12, Python 3.10, Git and shared libraries from a pinned Nixpkgs revision. The Python packages still use the existing requirements and hash-locked classifier environment. They are installed into separate <code>.venv-nix-heads</code>, <code>.venv-nix-vision</code> and <code>.venv-nix-pathology</code> directories. No existing venv or conda environment is reused or modified.</p>
-<p>This is a Nix development shell plus Python virtual environments, not a fully offline Nix derivation of the entire study. Dataset access, provider approval and model checkpoints are still required for image-to-result reproduction.</p>
-<h2 id="1-install-nix-and-obtain-the-full-source">1. Install Nix and obtain the full source</h2>
-<p>Install Nix using the <a href="https://nixos.org/download/">official Linux/WSL2 instructions</a>. On Windows, run this route in your Linux terminal under WSL2; the existing native PowerShell route remains a separate choice. This route currently targets x86_64 Linux, not native Windows, macOS or ARM.</p>
-<p>Download the complete source release from the <a href="https://anonymous.4open.science/r/CVPR_work-7DDE/">anonymous repository</a> or the <a href="https://anonymous.4open.science/w/CVPR_work-7DDE/">project website</a>. Extract it, then open the root containing <code>flake.nix</code>, <code>scripts/</code> and <code>requirements/</code>.</p>
-<pre><code class="language-bash">cd /path/to/paper-code
-test -f flake.nix &amp;&amp; test -f scripts/run_experiments.py
-nix --version
-nix --extra-experimental-features 'nix-command flakes' develop
+<!doctype html><html lang="en" data-anonymous-source-directory="docs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Optional Nix setup · CBMP</title><link rel="stylesheet" href="styles.css?v=20261117"><script src="proxy-compat.js" defer></script></head><body><a class="skip" href="#guide">Skip to guide</a><header class="site-header"><div class="header-inner"><a class="brand" href="index.html">cbmp<span class="brand-dot">.</span></a><nav aria-label="Main navigation"><a href="index.html#results">The evidence</a><a href="guide.html">Reproduce</a></nav><a class="header-download repository-link" data-repository-link href="https://anonymous.4open.science/r/CVPR_work-7DDE/">Repository ↗</a></div></header><div class="wrap guide-banner"><a href="index.html#reproduce">← Back to the project</a></div><main class="wrap guide-layout"><nav class="guide-nav" aria-label="Guide contents"><span class="tiny-label">PYTHON 3.11</span><a href="downloads/NIX.md" download>Download guide ↓</a></nav><article class="guide-content" id="guide"><h1 id="optional-nix-setup">Optional Nix setup</h1>
+<p>Use the same Python 3.11 reviewer commands inside the pinned Nix development shell. This remains optional; <a href="guide.html">venv and conda instructions</a> are independent choices.</p>
+<pre><code class="language-bash">nix develop --command python reproduce.py setup --manager venv
+nix develop --command python reproduce.py check
+nix develop --command python reproduce.py run --features /path/to/paper-features
 </code></pre>
-<p>The final command opens the development shell. If flakes are already enabled, <code>nix develop</code> is sufficient. Keep the committed <code>flake.lock</code>; do not update the Nix inputs when checking this release. The pinned legacy-runtime package set deliberately retains Python 3.10 for the original UNI/CONCH provider stack.</p>
-<h2 id="2-quick-check-of-the-classifier-environment">2. Quick check of the classifier environment</h2>
-<p>Inside the Nix shell:</p>
-<pre><code class="language-bash">bash scripts/nix_setup.sh heads
-source scripts/nix_env.sh
-head_python -m pip check
-head_python -m pytest tests -q --basetemp tmp/nix-tests
-head_python scripts/verify_paper_results.py
-</code></pre>
-<p>Or run the same data-free check in one command from the source root:</p>
-<pre><code class="language-bash">nix --extra-experimental-features 'nix-command flakes' develop --command bash scripts/nix_check.sh
-</code></pre>
-<p>This installs the hash-locked Linux classifier packages, runs the tests and checks the recorded summary hashes. It does not train the complete study or recreate the original predictions. CPU/GPU/provider integration is a separate check.</p>
-<h2 id="3-add-the-image-feature-environments">3. Add the image-feature environments</h2>
-<p>For full raw-image reproduction, also create the two separate CPU feature environments:</p>
-<pre><code class="language-bash">bash scripts/nix_setup.sh vision
-bash scripts/nix_setup.sh pathology
-source scripts/nix_env.sh
-head_python --version
-vision_python --version
-pathology_python --version
-vision_python -m pip check
-pathology_python -m pip check
-mkdir -p artifacts/environment-records/nix
-for runtime in head vision pathology; do
-  &quot;${runtime}_python&quot; -c 'import platform,sys; print(platform.platform()); print(sys.version)' &gt; &quot;artifacts/environment-records/nix/${runtime}-runtime.txt&quot;
-  &quot;${runtime}_python&quot; -m pip freeze --all &gt; &quot;artifacts/environment-records/nix/${runtime}-packages.txt&quot;
-done
-</code></pre>
-<p><code>bash scripts/nix_setup.sh all</code> creates all three environments. The feature installations download large PyTorch packages; UNI and CONCH weights require separate provider access. This route uses the existing CPU requirements. CUDA setup is not included in this optional Nix shell.</p>
-<p>The script only installs an environment when requested. It exits on installation errors; do not continue to extraction if an installation or <code>pip check</code> fails. If you move the source directory or change the pinned Nix input, use new environment directories instead of reusing virtual environments tied to the old interpreter paths.</p>
-<h2 id="4-continue-the-existing-bash-reproduction-steps">4. Continue the existing Bash reproduction steps</h2>
-<p>Stay in <code>nix develop</code> and source the interpreter functions whenever you enter a new shell:</p>
-<pre><code class="language-bash">source scripts/nix_env.sh
-printf 'Feature output directory: %s\n' &quot;$CBMP_FEATURE_DIR&quot;
-printf 'Pathology device: %s\n' &quot;$CBMP_PATHOLOGY_DEVICE&quot;
-</code></pre>
-<p>Then follow <strong>steps 3-9 of the complete guide</strong>, choosing its Bash blocks: stage the real datasets, fetch the provider checkpoints, extract all five feature sets, fit the heads, and export the reports. Skip that guide's venv/conda setup steps because the Nix route has already created separate environments and defined <code>head_python</code>, <code>vision_python</code> and <code>pathology_python</code>. <code>CBMP_FEATURE_DIR</code> defaults to <code>artifacts/features/full-reproduction</code> and the pathology device defaults to <code>cpu</code>.</p>
-<p>Once all five feature caches exist, the fitting sequence is unchanged:</p>
-<pre><code class="language-bash">CBMP_STUDY_ARGS=(
-  --run-dir artifacts/runs/full-reproduction
-  --tasks polypgen_resnet18 polypgen_dinov2 camelyon_resnet18 camelyon_custom_uni camelyon_custom_conch
-  --seeds 17 29 43 61 89 101 131 173 211 257
-  --protocols historical matched4 factorial
-  --workers 1 --threads 4
-)
-head_python scripts/run_experiments.py &quot;${CBMP_STUDY_ARGS[@]}&quot; --prepare-only
-head_python scripts/run_experiments.py &quot;${CBMP_STUDY_ARGS[@]}&quot; --resume
-</code></pre>
-<p>Planning only validates the inputs; the second command fits/selects the heads and evaluates them. The full run comprises 50 task/seed jobs and 3,080 target/head/seed metric cells. It keeps the pretrained encoders frozen.</p>
-<p>Continue with the complete guide's Bash reporting and export commands. Record the runtime and package versions for this Nix run as well; provisioned Python patch versions can differ from the historical manuscript runtime even though the scientific package versions and requirements remain fixed.</p>
-<h2 id="validation-scope">Validation scope</h2>
-<p>On 16 November 2026, the optional Nix shell passed its Linux classifier-environment check: <strong>62 tests passed and 3 provider-runtime tests were skipped</strong>, using Python 3.12.8, NumPy 1.26.4, SciPy 1.13.1 and scikit-learn 1.5.1. The recorded-summary hash check and CLI help check also passed, and the Python 3.10 runtime was available. The committed lock was reproduced without changes.</p>
-<p>The optional CI workflow <code>.github/workflows/nix.yml</code> repeats these checks. The two feature-environment installation paths and a complete raw-image study have not been executed in this Nix validation. The three skipped tests require the separate provider dependencies. These checks do not certify a provider/GPU route. See <code>provenance/NIX_VALIDATION.json</code> for the recorded validation scope of this release.</p>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<ul>
-<li><strong><code>nix: command not found</code>:</strong> finish the official installation and reopen the Linux terminal.</li>
-<li><strong>Flakes disabled:</strong> use the explicit <code>--extra-experimental-features 'nix-command flakes'</code> form above.</li>
-<li><strong>Untracked flake files in a Git checkout:</strong> Nix only includes tracked files from a Git source. Use the committed release, or stage your local Nix files before testing your own changes.</li>
-<li><strong>Missing <code>.so</code> libraries:</strong> run Python through this Nix shell; its library paths are part of the environment. The shell intentionally does not rely on a system Python or an activated conda environment.</li>
-<li><strong>Missing interpreter environment:</strong> run <code>bash scripts/nix_setup.sh heads</code>, <code>vision</code>, or <code>pathology</code> as indicated by the message, then source <code>scripts/nix_env.sh</code> again.</li>
-<li><strong>Checkpoint access denied:</strong> obtain the required provider approval and log in locally using the complete guide. Nix does not grant dataset or checkpoint access.</li>
-</ul></article></main><footer><div class="wrap footer-inner"><p>Anonymous research release · Additional Nix setup</p><a href="index.html#reproduce">Back to reproduction ↑</a></div></footer></body></html>
+<p>If flakes are disabled, add <code>--extra-experimental-features 'nix-command flakes'</code> after <code>nix</code>. Install Nix following the <a href="https://nixos.org/download/">official Linux/WSL2 instructions</a>. This shell targets x86_64 Linux/WSL2; it does not add native Windows or macOS support.</p>
+<p>For image reconstruction use <code>setup --manager venv --features</code> inside the same shell, then follow the complete guide. CPU is the default. Nix does not grant provider access or guarantee bitwise agreement across hardware.</p>
+<p>Scientific packages use the same portable reviewer requirements as the other routes. The Nix input remains pinned for provenance. The measured validation scope is in <code>provenance/REVIEWER_REPRODUCTION.json</code>; historical records describe earlier releases.</p></article></main><footer><div class="wrap footer-inner"><p>Anonymous research release</p><a href="index.html#reproduce">Back to reproduction ↑</a></div></footer></body></html>

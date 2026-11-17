@@ -1,57 +1,85 @@
 # Do Center-Balanced Prototypes Generalize?
 
-Code for **A Controlled Study in Medical Imaging**. This repository keeps
-the implemented paper methods, audited cohort manifests, five task/encoder
-configurations, tests, numerical summaries and LaTeX sources. Historical working
-folders, pilots, virtual environments, datasets, checkpoint binaries and full run
-outputs are not part of the source release.
+A controlled study in medical imaging: frozen features, nine classifier heads,
+five task/encoder settings, ten fitting seeds and three source-only protocols.
 
-The study compares center-balanced multi-prototype classification (CBMP) with
-eight linear/cosine/prototype controls. Encoders are frozen; tuning uses source
-centers only.
+[Project website](https://anonymous.4open.science/w/CVPR_work-7DDE/) ·
+[Reproduction guide](docs/REPRODUCE_ALL.md) · [Data access](docs/DATA.md)
 
-## Project website
+## Reproduce with a few commands
 
-Visit the [anonymous project website](https://anonymous.4open.science/w/CVPR_work-7DDE/) for the method overview, interactive results, and reproduction guide.
+Use **Python 3.11** for both venv and conda. Run commands from this repository
+root. The small `reproduce.py` launcher creates separate package environments
+and calls the existing scientific scripts; it does not change the algorithms.
 
-The website source is available in [`docs/index.html`](docs/index.html).
-
-
-## Optional Nix setup
-
-For x86_64 Linux or WSL2, the [additional Nix guide](docs/NIX.md) provides pinned
-Python runtimes and separate environments using the existing requirements. It
-does not replace the PowerShell/Bash, venv or conda routes below.
-
-## Reproduce the complete study, including classifier fitting
-
-Follow [the ordered end-to-end guide](docs/REPRODUCE_ALL.md) to start from
-images and pretrained checkpoints, extract all five feature sets, fit/select
-all heads over ten seeds and three protocols, and regenerate reports and table
-exports. It includes complete PowerShell and Bash/Linux commands, venv and conda
-setup, expected outputs, and a paper-to-output map. Apply the accompanying supplementary-export fix if using an older release.
-
-The fitting command actually trains the linear/cosine heads and fits the
-prototype banks. The paper does not train or fine-tune the pretrained encoders.
-Downloading weights or checking saved summaries does not reproduce that fitting.
-
-| Starting point | Route | External inputs |
-|---|---|---|
-| Raw images | [Complete reproduction](docs/REPRODUCE_ALL.md) | Exact dataset images and provider checkpoints; UNI/CONCH access approval |
-| Small saved summaries | Quick check below | None; this only checks hashes and displays recorded values |
-
-The main reproduction route needs no files from the authors' old project.
-`artifacts/` is only the output directory for features extracted from real images,
-fitted models, predictions and reports. Optional reuse of exact paper features
-is documented in the guide's appendix, separately from raw-data reproduction.
-
-## Optional quick check: recorded paper numbers
-
-This command needs only the Python standard library and the tracked small summaries:
+Choose one setup:
 
 ```bash
-python scripts/verify_paper_results.py
+python reproduce.py setup --manager venv
 ```
+
+or:
+
+```bash
+python reproduce.py setup --manager conda
+```
+
+Then check the installation and refit using the five genuine feature caches:
+
+```bash
+python reproduce.py check
+python reproduce.py run --features /path/to/paper-features
+```
+
+These commands work from PowerShell or Bash; quote paths containing spaces.
+`check` tests the installation and saved summary checksums. **Only `run` fits
+the study.** It runs all five tasks, ten seeds and three protocols by default,
+then regenerates reports and paper exports and compares the means to the recorded
+results. Outputs go into `artifacts/reviewer-run`; use `--resume` after an
+interruption, or `--output` for a different run directory.
+
+For venv, install Python 3.11 first and make it available as `python` or
+`python3.11`. On Windows, `py -3.11` can replace `python`; `setup --python PATH`
+also accepts an explicit Python 3.11 executable. Conda setup creates Python 3.11
+itself. Environments need no activation, and the launcher remembers your choice.
+
+## Start from real images instead
+
+Add the feature dependencies to your chosen setup (venv shown; conda is also
+supported), obtain the permitted datasets and provider access, then run:
+
+```bash
+python reproduce.py setup --manager venv --features
+python reproduce.py login
+python reproduce.py images --polypgen-root /path/to/polypgen --camelyon-root /path/to/camelyon
+```
+
+`images` verifies the canonical images/checkpoints, extracts all five feature
+sets and runs the full classifier study. The pretrained encoders stay frozen.
+See the [short complete guide](docs/REPRODUCE_ALL.md) for archive/parquet staging,
+local checkpoints, CPU/GPU selection and a smaller first refit.
+
+## What is portable, and what is fixed?
+
+Pip selects the appropriate wheels using ordinary requirements files, without
+machine-specific hash-file commands in the reviewer setup. Scientific package
+versions, input identities, seeds, models and protocols remain controlled.
+CPU execution is the default; no particular GPU is required for head fitting.
+
+This does not imply support for every machine or bitwise equality across all
+hardware. Feature extraction requires supported PyTorch wheels, sufficient
+memory/storage, and access to UNI/CONCH weights. The tested platforms are
+Windows x86_64 and Ubuntu 24.04 x86_64; other platforms remain unverified.
+The installation checker reports incompatible runtimes. Package environments remain separate because
+the two encoder-provider stacks require different dependency versions.
+
+Real-image probes also found PolypGen feature drift between libjpeg 9 and the
+libjpeg-turbo decoder in pip's Pillow wheels, despite identical Pillow versions.
+The checker records the decoder. Use the genuine original caches for the
+confirmed numerical refit route; full agreement after fresh image decoding
+remains unverified.
+
+## Recorded paper numbers
 
 Primary H2 balanced accuracy, four-candidate protocol, ten-seed means (%):
 
@@ -61,99 +89,17 @@ Primary H2 balanced accuracy, four-candidate protocol, ten-seed means (%):
 | UNI | 95.80 | 97.72 | 97.96 |
 | CONCH | 92.63 | 96.50 | 96.88 |
 
-Checking these file hashes and values does not refit a classifier or reconstruct
-bootstrap intervals. The full run/reconstruction routes are documented below.
+Checking these saved values is not a refit. Validation scope and measured rerun
+differences are recorded in `provenance/REVIEWER_REPRODUCTION.json`.
 
-## Choose your platform and environment manager
+## Materials and scope
 
-| Platform | venv | conda |
-|---|---|---|
-| Windows PowerShell | [Setup 1A](docs/REPRODUCE_ALL.md#1a-windows-powershell-with-venv) | [Setup 1B](docs/REPRODUCE_ALL.md#1b-windows-powershell-with-conda) |
-| Linux Bash | [Setup 1C](docs/REPRODUCE_ALL.md#1c-linux-bash-with-venv) | [Setup 1D](docs/REPRODUCE_ALL.md#1d-linux-bash-with-conda) |
+The source release contains scientific code, manifests, configurations, tests,
+recorded summaries and anonymous manuscript sources. Raw medical images,
+checkpoints, numerical feature caches and private run trees are separate inputs.
+The cohort is custom; results are conditional on the recorded centers and groups,
+not an official full WILDS benchmark or a hospital-population guarantee.
 
-Start with step 0 of the guide, choose one setup, then follow your shell's block
-in steps 2-9. Each setup creates separate head, vision and pathology environments.
-The guide uses explicit interpreter functions; conda uses `conda run` so Windows
-DLL paths and the chosen environment are set without activation switching.
-
-Head-fitting dependencies use OS-specific hash-locked wheels. Vision/provider
-requirements stay separate. Actual Linux provisioning and full raw reconstruction
-have not been independently executed in this audit; documentation and shell
-syntax checks do not establish a full reproduction.
-
-## Run the experiments
-
-The registered task names are:
-
-- `polypgen_resnet18`, `polypgen_dinov2`
-- `camelyon_resnet18`, `camelyon_custom_uni`, `camelyon_custom_conch`
-
-They use two canonical manifests, not five different cohorts. Ten fixed seeds are
-17, 29, 43, 61, 89, 101, 131, 173, 211 and 257. `historical`, `matched4` and
-`factorial` remain distinct protocols. `matched4` uses four candidates per tunable
-family; centroid controls have one fixed configuration.
-
-### Prepare real-data features
-
-Complete steps 3-5 of [the end-to-end guide](docs/REPRODUCE_ALL.md): obtain and
-stage the exact real-image cohorts, fetch the pretrained checkpoints, and extract
-all five feature sets. The commands below then train/select the heads and
-regenerate predictions and analyses. No precomputed author run is required.
-
-### Plan, fit, report
-
-After steps 0-5 of the guide have prepared the selected environment functions
-and all five real-data feature sets, run your shell's block below. Defaults are
-all five tasks, all ten seeds, all three protocols, one worker and four numerical
-threads. The guide gives the explicit study arguments and a separate smoke run.
-
-**PowerShell:**
-
-```powershell
-Invoke-HeadPython scripts/run_experiments.py --run-dir artifacts/runs/paper --prepare-only
-Invoke-HeadPython scripts/run_experiments.py --run-dir artifacts/runs/paper --resume
-Invoke-HeadPython scripts/report_review_revision.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/paper --attempts 2000 --seed 2027
-Invoke-HeadPython scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/paper --output-dir artifacts/reports/patient_sequence_intervals
-Invoke-HeadPython scripts/audit_review_stability.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/prototype_stability
-Invoke-HeadPython scripts/export_paper_results.py --report-dir artifacts/reports/paper --output-dir artifacts/paper_exports
-Invoke-HeadPython scripts/export_review_supplement.py --report-dir artifacts/reports/paper --aggregate-dir artifacts/reports/patient_sequence_intervals --stability-dir artifacts/reports/prototype_stability --output-dir artifacts/supplement_exports
-```
-
-**Bash/Linux:**
-
-```bash
-head_python scripts/run_experiments.py --run-dir artifacts/runs/paper --prepare-only
-head_python scripts/run_experiments.py --run-dir artifacts/runs/paper --resume
-head_python scripts/report_review_revision.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/paper --attempts 2000 --seed 2027
-head_python scripts/audit_aggregate_uncertainty.py --report-dir artifacts/reports/paper --output-dir artifacts/reports/patient_sequence_intervals
-head_python scripts/audit_review_stability.py --run-dir artifacts/runs/paper --output-dir artifacts/reports/prototype_stability
-head_python scripts/export_paper_results.py --report-dir artifacts/reports/paper --output-dir artifacts/paper_exports
-head_python scripts/export_review_supplement.py --report-dir artifacts/reports/paper --aggregate-dir artifacts/reports/patient_sequence_intervals --stability-dir artifacts/reports/prototype_stability --output-dir artifacts/supplement_exports
-```
-
-Use new output names for independent runs. `--resume` requires identical code,
-inputs and settings. A one-seed run cannot support ten-seed aggregate/paper exports.
-
-Each completed job saves frozen source choices before target prediction, raw
-predictions, metrics, logs and completion hashes under its new runtime folder.
-The code never writes to the original research project.
-
-## Repository layout
-
-```text
-src/             Frozen classifier, data validation and audit implementation
-scripts/         Portable extraction, fitting, reporting and paper exports
-configs/         Model identities, task catalog and frozen PolypGen folds
-manifests/       Audited image/label/center/group identities; no images
-requirements/    Platform wheel locks and separate provider environments
-tests/           Core and boundary regression fixtures
-results/paper/   Small immutable reference summaries, not full experiment logs
-paper/           main.tex, main.bib, sections, figures and supplementary sources
-docs/            Data, reproduction and GitHub upload instructions
-provenance/      Scientific source hashes and release validation
-```
-
-The `paper/main.tex` is the Overleaf entry point; `paper/supplementary.tex` compiles the
-separate supplement. Results remain limited to the recorded sequences and sampled
-patients; more seeds or encoders do not add independent hospitals.
-
+[Optional Nix setup](docs/NIX.md) remains an additional choice. Historical
+environment records are retained for provenance; they are not required by the
+normal reviewer setup. Dataset/provider terms and licenses remain separate.
