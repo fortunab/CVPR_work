@@ -2,9 +2,9 @@
 
 Choose one of the two tutorials:
 
-- [Complete end-to-end](REPRODUCE_COMPLETE.md): explicit setup, configurations,
+- [Complete end-to-end](REPRODUCE_ALL.md): explicit setup, configurations,
   real data, every experiment, analyses and paper exports.
-- [Short tutorial](REPRODUCE_ALL.md): the compact launcher workflow.
+- [Short tutorial](REPRODUCE_SHORT.md): the compact launcher workflow.
 
 Both support PowerShell and Bash, with venv or conda, using Python 3.11.
 

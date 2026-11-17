@@ -25,7 +25,7 @@ jobs:
           from pathlib import Path
           import base64, hashlib, io, json, os, re, shlex, subprocess, urllib.request, zipfile
           count = 0
-          for name in ['docs/REPRODUCE_COMPLETE.md', 'docs/REPRODUCE_ALL.md']:
+          for name in ['docs/REPRODUCE_ALL.md', 'docs/REPRODUCE_SHORT.md']:
               text = Path(name).read_text()
               for block in re.findall(r'```bash\n(.*?)```', text, re.S):
                   subprocess.run(['bash', '-n'], input=block, text=True, check=True)
