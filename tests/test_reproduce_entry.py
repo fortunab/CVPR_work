@@ -35,7 +35,7 @@ class ReviewerEntryTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 entry.reserve_output(out, False)
             self.assertEqual(marker.read_text(), 'keep')
-            self.assertEqual(entry.reserve_output(out, True), out)
+            self.assertEqual(entry.reserve_output(out, True), out.resolve())
 
     def test_partial_run_recomputes_report_and_does_not_call_full_exporters(self):
         with tempfile.TemporaryDirectory() as temporary, patch.object(entry, 'ROOT', Path(temporary)):
