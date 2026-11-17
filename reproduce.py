@@ -38,6 +38,10 @@ def process_env(extra=None):
     env = os.environ.copy()
     env.pop('PYTHONPATH', None)
     env['PYTHONNOUSERSITE'] = '1'
+    temporary = ROOT / '.reproduce/tmp'
+    temporary.mkdir(parents=True, exist_ok=True)
+    for name in ('TEMP', 'TMP', 'TMPDIR'):
+        env[name] = str(temporary)
     env.update(extra or {})
     return env
 
@@ -110,12 +114,20 @@ def setup(args):
         prefix = ROOT / '.reproduce' / args.manager / profile
         if not prefix.exists():
             if args.manager == 'conda':
-                execute([*creator, 'create', '--prefix', prefix, 'python=3.11', 'pip', '-y'], conda_env)
+                execute([*creator, 'create', '--prefix', prefix, '--override-channels', '-c', 'conda-forge',
+                         'python=3.11', 'pip', '-y'], conda_env)
             else:
                 prefix.parent.mkdir(parents=True, exist_ok=True)
                 execute([*creator, '-m', 'venv', prefix])
         state['profiles'][profile] = str(prefix)
-        runtime(state, profile, '-c', 'import sys; assert sys.version_info[:2] == (3,11), sys.version')
+        try:
+            runtime(state, profile, '-c', 'import sys; assert sys.version_info[:2] == (3,11), sys.version')
+        except subprocess.CalledProcessError as error:
+            if args.manager == 'conda':
+                raise RuntimeError('Conda could not start its Python 3.11 environment. '
+                                   'Use the venv route or repair/update the conda installation; '
+                                   'see the conda error above. Existing environments are preserved.') from error
+            raise
         if profile != 'heads':
             pair = ('2.13.0', '0.28.0') if profile == 'vision' else ('2.5.1', '0.20.1')
             index = ['--index-url', 'https://download.pytorch.org/whl/cpu'] if sys.platform in ('win32', 'linux') else []
@@ -148,16 +160,40 @@ def reserve_output(output, resume):
 
 
 def stage_output(state, script, destination, options, proof, env):
-    if destination.exists():
+    receipt_path = destination / '.reviewer-stage.json'
+    recipe = {
+        'version': 1,
+        'script': script,
+        'script_sha256': digest(ROOT / 'scripts' / script),
+        'options_sha256': hashlib.sha256(json.dumps([str(value) for value in options],
+                                                   separators=(',', ':')).encode()).hexdigest(),
+        'upstream_sha256': {key: digest(path) for key, path in proof.items()},
+    }
+    def output_hashes():
+        return {path.relative_to(destination).as_posix(): digest(path)
+                for path in sorted(destination.rglob('*'))
+                if path.is_file() and path != receipt_path}
+    def check_upstream_provenance():
         marker = destination / 'provenance.json'
         if not marker.is_file():
             raise FileExistsError(f'Incomplete output is preserved at {destination}; choose a new --output.')
         record = json.loads(marker.read_text(encoding='utf-8'))
-        if any(record.get(key) != digest(path) for key, path in proof.items()):
+        if any(record.get(key) != value for key, value in recipe['upstream_sha256'].items()):
             raise ValueError(f'Existing output provenance differs: {destination}')
+    if destination.exists():
+        check_upstream_provenance()
+        if not receipt_path.is_file():
+            raise ValueError(f'Existing stage has no verified reviewer receipt: {destination}; choose a new --output.')
+        receipt = json.loads(receipt_path.read_text(encoding='utf-8'))
+        if receipt.get('recipe') != recipe:
+            raise ValueError(f'Existing stage recipe changed: {destination}; preserving its output.')
+        if receipt.get('output_sha256') != output_hashes():
+            raise ValueError(f'Existing stage output content changed: {destination}; preserving its output.')
         print('Preserved verified stage:', destination.name, flush=True)
         return
     runtime(state, 'heads', 'scripts/' + script, *options, '--output-dir', destination, env=env)
+    check_upstream_provenance()
+    write_json(receipt_path, {'recipe': recipe, 'output_sha256': output_hashes()})
 
 
 def is_full_study(tasks, seeds, completed):
@@ -173,10 +209,14 @@ def compare_report(report, full):
     def key(row):
         return tuple(row[name] for name in ('task', 'protocol', 'center', 'method'))
     reference = {}
+    reference_fields = [*METRICS]
+    if full:
+        reference_fields += [m + suffix for m in METRICS for suffix in ('_seed_sd', '_valid_seeds')]
+        reference_fields.append('fitting_seeds')
     for name in ('original_image_metrics.csv', 'histology_image_metrics.csv'):
         for row in records(ROOT / 'results/paper' / name):
             previous = reference.get(key(row))
-            if previous and any(float(previous[m]) != float(row[m]) for m in METRICS):
+            if previous and any(float(previous[m]) != float(row[m]) for m in reference_fields):
                 raise ValueError('Conflicting recorded result summaries')
             reference[key(row)] = row
     actual = records(report / 'image_metrics_seed_means.csv')
@@ -187,21 +227,47 @@ def compare_report(report, full):
     if full and {key(r) for r in actual} != set(reference):
         raise ValueError('Complete-study report does not contain all 308 recorded result cells')
     maxima = {m: 0.0 for m in METRICS}
+    sd_maxima = {m: 0.0 for m in METRICS} if full else None
     for row in actual:
         if key(row) not in reference:
             raise ValueError('Unexpected recomputed result cell: ' + str(key(row)))
+        expected = reference[key(row)]
+        if full and (int(row['fitting_seeds']) != 10
+                     or int(row['fitting_seeds']) != int(expected['fitting_seeds'])):
+            raise ValueError('Complete-study fitting-seed count differs from the recorded ten-seed study')
         for metric in METRICS:
-            difference = abs(float(row[metric]) - float(reference[key(row)][metric]))
+            difference = abs(float(row[metric]) - float(expected[metric]))
             if not math.isfinite(difference):
                 raise ValueError('Non-finite recomputed metric: ' + metric)
             maxima[metric] = max(maxima[metric], difference)
+            if full:
+                field = metric + '_seed_sd'
+                sd_difference = abs(float(row[field]) - float(expected[field]))
+                if not math.isfinite(sd_difference):
+                    raise ValueError('Non-finite recomputed fitting-seed SD: ' + metric)
+                sd_maxima[metric] = max(sd_maxima[metric], sd_difference)
+                count = metric + '_valid_seeds'
+                if int(row[count]) != 10 or int(row[count]) != int(expected[count]):
+                    raise ValueError('Complete-study valid-seed count differs: ' + metric)
+    # Absolute fraction/score tolerance; far below the paper's printed precision.
+    # Every measured difference is retained, including differences below this bound.
+    tolerance = 1e-8
     result = {'scope': 'recomputed predictions versus released ten-seed means',
               'complete_five_task_ten_seed_study': full, 'result_rows_compared': len(actual),
               'report_sha256': digest(report / 'image_metrics_seed_means.csv'),
               'maximum_absolute_difference': maxima,
+              'maximum_absolute_seed_sd_difference': sd_maxima,
+              'valid_seed_counts_match': True if full else None,
+              'fitting_seed_counts_match': True if full else None,
+              'numerical_tolerance': tolerance if full else None,
+              'within_numerical_tolerance': (max([*maxima.values(), *sd_maxima.values()]) <= tolerance) if full else None,
               'partial_run_note': None if full else 'Selected task/seed means are not the full ten-seed estimate; differences from the published ten-seed means are expected.'}
     write_json(report.parent / 'comparison.json', result)
     print('Maximum absolute differences from recorded ten-seed means:', json.dumps(maxima), flush=True)
+    if full:
+        print('Maximum absolute fitting-seed SD differences:', json.dumps(sd_maxima), flush=True)
+        print('All valid/fitting-seed counts match; within numerical tolerance:',
+              result['within_numerical_tolerance'], flush=True)
     if not full:
         print(result['partial_run_note'], flush=True)
     return result

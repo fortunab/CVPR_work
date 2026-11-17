@@ -96,6 +96,60 @@ class ReviewerEntryTests(unittest.TestCase):
                 entry.run_study(args, {'manager': 'venv', 'profiles': {'heads': 'prefix'}})
             self.assertFalse(out.exists())
 
+    def test_resume_rejects_tampered_report_and_preserves_its_bytes(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.object(entry, 'ROOT', Path(temporary)):
+            root = Path(temporary)
+            (root / 'scripts').mkdir()
+            (root / 'scripts/report_review_revision.py').write_text('fixture reporter')
+            upstream = root / 'run_manifest.json'
+            upstream.write_text('{"completed": true}')
+            report = root / 'report'
+            calls = []
+            def make_report(state, profile, script, *options, env=None):
+                calls.append(script)
+                report.mkdir()
+                (report / 'provenance.json').write_text(json.dumps({'run_manifest_sha256': entry.digest(upstream)}))
+                (report / 'image_metrics_seed_means.csv').write_text('balanced_accuracy\n0.8\n')
+            arguments = ({}, 'report_review_revision.py', report, ['--run-dir', root / 'runs'],
+                         {'run_manifest_sha256': upstream}, {})
+            with patch.object(entry, 'runtime', make_report):
+                entry.stage_output(*arguments)
+                entry.stage_output(*arguments)
+                self.assertEqual(len(calls), 1)
+                changed = 'balanced_accuracy\n0.99\n'
+                (report / 'image_metrics_seed_means.csv').write_text(changed)
+                with self.assertRaisesRegex(ValueError, 'output content changed'):
+                    entry.stage_output(*arguments)
+                self.assertEqual((report / 'image_metrics_seed_means.csv').read_text(), changed)
+                self.assertEqual(len(calls), 1)
+
+    def test_full_comparison_checks_sd_and_rejects_missing_valid_seed(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.object(entry, 'ROOT', Path(temporary)):
+            root = Path(temporary)
+            (root / 'results/paper').mkdir(parents=True)
+            report = root / 'output/report'
+            report.mkdir(parents=True)
+            expected = {'task': 'camelyon_custom_uni', 'protocol': 'matched4', 'center': '2',
+                        'method': 'cbmp', 'fitting_seeds': 10}
+            for metric in entry.METRICS:
+                expected.update({metric: 0.8, metric + '_seed_sd': 0.01, metric + '_valid_seeds': 10})
+            def save(path, row):
+                with path.open('w', newline='') as stream:
+                    writer = csv.DictWriter(stream, fieldnames=list(row))
+                    writer.writeheader()
+                    writer.writerow(row)
+            for name in ['original_image_metrics.csv', 'histology_image_metrics.csv']:
+                save(root / 'results/paper' / name, expected)
+            changed = dict(expected, balanced_accuracy_seed_sd=0.03)
+            save(report / 'image_metrics_seed_means.csv', changed)
+            result = entry.compare_report(report, True)
+            self.assertEqual(result['maximum_absolute_difference']['balanced_accuracy'], 0)
+            self.assertAlmostEqual(result['maximum_absolute_seed_sd_difference']['balanced_accuracy'], 0.02)
+            self.assertFalse(result['within_numerical_tolerance'])
+            save(report / 'image_metrics_seed_means.csv', dict(expected, auroc_valid_seeds=9))
+            with self.assertRaisesRegex(ValueError, 'valid-seed count differs'):
+                entry.compare_report(report, True)
+
 
 if __name__ == '__main__':
     unittest.main()
